@@ -1,0 +1,22 @@
+{
+  "name": "storm",
+  "version": "0.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/noodle/unstable-asteroid"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/noodle/unstable-asteroid/issues"
+  },
+  "homepage": "https://github.com/noodle/unstable-asteroid",
+  "dependencies": {
+    "express": "^4.10.4"
+  }
+}
