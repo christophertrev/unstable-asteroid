@@ -16,11 +16,14 @@ app.get('/', function(req, res) {
 
 io.on('connection', function(socket) {
   //send all current messages to the newly connected user
-  socket.emit('all messages', messageController.getFullMessageTree() );
+  console.log('Connected with user');
+  socket.emit('all messages', messageController.getFullMessageTree());
 
   socket.on('new message', function(msg) {
-    messages.addMessage(msg);
-    io.emit('all messages', messageController.addNewMessage() );
+    console.log('in new message, message is: ', msg);
+    messageController.addNewMessage(msg);
+    console.log('getFullMessageTree', messageController.getFullMessageTree());
+    io.emit('all messages', messageController.getFullMessageTree() );
   });
 });
 
