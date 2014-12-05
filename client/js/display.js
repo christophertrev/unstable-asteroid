@@ -95,24 +95,22 @@ function update() {
   node.exit().remove();
 
   // Enter any new nodes.
-  node.enter().append('g')
+  var g = node.enter().append('g')
       .attr("transform", function(d){
         return "translate(" + d.x + "," + d.y + ")";
       })
-      .call(force.drag)
-      .attr("class", "node")
-      .append("circle")
-      // .attr("cx", function(d) { return d.x; })
-      // .attr("cy", function(d) { return d.y; })
-      .attr("r", function(d) { return Math.sqrt(d.size) / 10 || 15; })
-      .style("fill", color)
-      .on("click", click);
-  node.append("text")
+      .call(force.drag);
+
+  g.attr("class", "node")
+    .append("circle")
+    .attr("r", function(d) { return Math.sqrt(d.size) / 10 || 15; })
+    .style("fill", color)
+    .on("click", click);
+  g.append("text")
     .attr("class", "label")
     .attr("dx", 0)
     .attr("dy", ".35em")
     .text(function(d){return d.name});    
-
 
   node.attr("class", function(d){
     if(d === nodeSelected) {
