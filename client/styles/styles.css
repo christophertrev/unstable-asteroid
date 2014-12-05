@@ -1,10 +1,47 @@
 /*insert cool css here!*/
+body {
+  /*background-color: #6699CC;*/
+  background-color: #003366;
+}
+
+.d3box {
+	/*background-color: #C0C0C0;*/
+	background-color: #DDDDDD;
+	/*width:80%;*/
+	/*margin-left: auto;*/
+	/*margin-right: auto;*/
+}
+
+.graph {
+  /*margin-left: 10%;*/
+  /*margin-right: 10%;*/
+  /*width: 100%;*/
+}
+
+.messageInput{
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
 .selected {
-  stroke: red;
+  stroke: lightyellow;
+  stroke-width: 5px;
+  /*box-shadow: 0px 0px 5px #fff;*/
+}
+
+.label {
+	color: black;
+	stroke: none;
 }
 
 .link {
   fill: none;
-  stroke: #9ecae1;
+  stroke: #003366;
   stroke-width: 1.5px;
+}
+
+.footer {
+  /*background-color: #6699CC;*/
+  	margin-left: auto;
+	margin-right: auto;
 }
