@@ -10,23 +10,24 @@ var Message = require('./messageModel'),
 module.exports = {
 
   //returns array of all messages on db
-  getFullMessageTree: function(req, res, next) {
+  getFullMessageTree: function(callback) {
     var getMessageTree = Q.nbind(Message.find, Message);
 
     getMessageTree({})
       .then(function (messages) {
-        return module.exports.constructTree(messages);
+        callback(module.exports.constructTree(messages));
       })
       .fail(function (error) {
-        next(error);
+        console.log('error');
       });
   },
 
   //adds message to db
-  ////@params [Object (message, parentID)]
+  //@params [Object (message, parentID)]
   addNewMessage: function (messageObject, callback) {
-    // console.log('messageController.addNewMessage message is: ', messageObject);
-    // console.log(arguments);
+    if (messageObject.parentID === 'null') {
+      messageObject.parentID = null;
+    }
 
     var newMessage = {
       message: messageObject.message,
@@ -36,29 +37,29 @@ module.exports = {
 
     //creates promises of query functions
     var createMessage = Q.nbind(Message.create, Message);
-    var findMessage = Q.nbind(Message.create, Message);
+    var findMessage = Q.nbind(Message.find, Message);
 
     //creates and saves message to db
     createMessage(newMessage)
       .then(function(createdMessage) {
+        callback();
         return createdMessage;
-      })
-
-      //finds parent of the created message. pushes messageID into childrenID array of parent
-      .then(function(createdMessage) {
-        findMessage({ _id: createdMessage.parentID })
-          .then(function(foundParent) {
-            if (foundParent) {
-              foundParent.childrenID.push(createdMessage._id);
-              foundParent.save();
-            }
-
-            // for testing purposes
-            if (callback) {
-              callback(createdMessage);
-            }
-          });
       });
+
+      //finds parent of the created message. pushes messageID into childrenID array of parent and saves back to db
+      // .then(function(createdMessage) {
+      //   findMessage({ _id: createdMessage.parentID })
+      //     .then(function(foundParent) {
+      //       if (foundParent) {
+      //         foundParent.childrenID.push(createdMessage._id);
+      //         foundParent.save(function() {
+      //           Message.find({}, function(messages) {
+      //             console.log('db size', messages)
+      //           });
+      //         });
+      //       }
+      //     });
+      // });
   },
 
   /**
