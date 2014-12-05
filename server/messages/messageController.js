@@ -25,6 +25,9 @@ module.exports = {
   //adds message to db
   ////@params [Object (message, parentID)]
   addNewMessage: function (messageObject, callback) {
+    // console.log('messageController.addNewMessage message is: ', messageObject);
+    // console.log(arguments);
+
     var newMessage = {
       message: messageObject.message,
       parentID: messageObject.parentID,

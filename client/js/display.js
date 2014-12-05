@@ -15,51 +15,48 @@ var svg = d3.select(".d3box").append("svg")
 var link = svg.selectAll(".link"),
     node = svg.selectAll(".node");
 
-var treeData = [
-  {
-    "name": "Top Level",
-    "parent": "null",
-    "children": [
-      {
-        "name": "Level 2: A",
-        "parent": "Top Level",
-        "children": [
-          {
-            "name": "Son of A",
-            "parent": "Level 2: A"
-          },
-          {
-            "name": "Daughter of A",
-            "parent": "Level 2: A"
-          },
-          {
-            "name": "Other Daughter of A",
-            "parent": "Level 2: A"
-          },
+// var treeData = [
+//   {
+//     "name": "Top Level",
+//     "parent": "null",
+//     "children": [
+//       {
+//         "name": "Level 2: A",
+//         "parent": "Top Level",
+//         "children": [
+//           {
+//             "name": "Son of A",
+//             "parent": "Level 2: A"
+//           },
+//           {
+//             "name": "Daughter of A",
+//             "parent": "Level 2: A"
+//           },
+//           {
+//             "name": "Other Daughter of A",
+//             "parent": "Level 2: A"
+//           },
            
-        ]
-      },
-      {
-        "name": "Level 2: B",
-        "parent": "Top Level"
-      }
-    ]
-  },
-  {
-    "name": "Chris",
-    "parent": "null"
-  }
-];
+//         ]
+//       },
+//       {
+//         "name": "Level 2: B",
+//         "parent": "Top Level"
+//       }
+//     ]
+//   },
+//   {
+//     "name": "Chris",
+//     "parent": "null"
+//   }
+// ];
 
-  //root = treeData;
-  // var nodes = flatten(treeData);
-  // console.log(nodes);
-  update();
+  //update();
 
 
 function update() {
   var nodes = flatten(treeData);
-  console.log(treeData);
+  //console.log(treeData);
   var links = d3.layout.tree().links(nodes);
 
   // Restart the force layout.
@@ -110,7 +107,7 @@ function update() {
     .attr("class", "label")
     .attr("dx", 0)
     .attr("dy", ".35em")
-    .text(function(d){return d.name});    
+    .text(function(d){return d.message});    
 
   node.attr("class", function(d){
     if(d === nodeSelected) {
@@ -173,20 +170,7 @@ function flatten(roots) {
     node.id = ++i;
     nodes.push(node);
   }
-  console.log(nodes)
+  //console.log(nodes)
   return nodes;
 }
 
-$('button').on('click', function(){
-  var message = $('input').val();
-  if(nodeSelected){
-    if(!nodeSelected.children){
-      nodeSelected.children = [];
-    }
-    nodeSelected.children.push({name: message, parent: nodeSelected.name});
-  }else{
-    treeData.push({name: message, parent: 'null'});
-  }
-  update();
-
-})
