@@ -9,7 +9,8 @@ var force = d3.layout.force()
 
 var svg = d3.select(".d3box").append("svg")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height)
+    .attr("class",'graph');
 
 var link = svg.selectAll(".link"),
     node = svg.selectAll(".node");
@@ -86,7 +87,7 @@ function update() {
   // Update the nodes…
   //node = node.data(nodes).style("fill", color);
 
-  node = node.data(nodes, function(d) { return d.id; }).style("fill", color);
+  node = node.data(nodes, function(d) { return d.id; });
 
 
 
@@ -107,6 +108,7 @@ function update() {
       .style("fill", color)
       .on("click", click);
   node.append("text")
+    .attr("class", "label")
     .attr("dx", 0)
     .attr("dy", ".35em")
     .text(function(d){return d.name});    
@@ -135,7 +137,8 @@ function tick() {
 
 // Color leaf nodes orange, and packages white or blue.
 function color(d) {
-  return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
+  // return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
+  return "#fd8d3c"
 }
 
 var nodeSelected;
@@ -143,6 +146,7 @@ var nodeSelected;
 function click(d) {
   // d.attr("class", "selected");
   //console.log(force.nodes());
+  // console.log('obj',d)
   nodeSelected = nodeSelected === d ? null : d;
   update();
   //d.selected = !d.selected;
@@ -171,7 +175,7 @@ function flatten(roots) {
     node.id = ++i;
     nodes.push(node);
   }
-  
+  console.log(nodes)
   return nodes;
 }
 

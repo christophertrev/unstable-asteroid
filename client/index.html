@@ -1,15 +1,32 @@
 <!DOCTYPE html>
 <html>
   <head>
+     <link href="bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
   	<link rel="stylesheet" type="text/css" href="styles/styles.css">
   </head>
   <body>
-  	OMG YOU MADE IT@ SOME HOW
-    <div class="d3box"></div>
-    <input value="sup?"></input>
-    <button>Add message</button>
+  <nav class="navbar navbar-default navbar-static-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">'STORM</a>
+    </div>
+  </div>
+  </nav>
+    <div class='row'>
+      <div class="d3box col-xs-8"></div>
+      <div class='col-xs-4'>
+        <div class="input-group">
+          <input type="text" class="messageBox form-control" placeholder='Here Comes the Storm'>
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button">Send</button>
+          </span>
+        </div><!-- /input-group -->
+      </div>
+    </div>
+
   </body>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
   <script src="js/display.js"></script>
 </html>
