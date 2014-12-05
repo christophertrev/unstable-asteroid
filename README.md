@@ -1,5 +1,4 @@
 unstable-asteroid
-=================
 
 [![Stories in Ready](https://badge.waffle.io/unstable-asteroid/unstable-asteroid.png?label=ready&title=Ready)](http://waffle.io/unstable-asteroid/unstable-asteroid)
 
