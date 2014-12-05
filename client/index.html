@@ -5,25 +5,15 @@
   	<link rel="stylesheet" type="text/css" href="styles/styles.css">
   </head>
   <body>
-  <nav class="navbar navbar-default navbar-static-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="#">'STORM</a>
-    </div>
-  </div>
-  </nav>
-    <div class='row'>
-      <div class="d3box col-xs-8"></div>
-      <div class='col-xs-4'>
-        <div class="input-group">
-          <input type="text" class="messageBox form-control" placeholder='Here Comes the Storm'>
-          <span class="input-group-btn">
-            <button class="btn btn-default" type="button">Send</button>
-          </span>
-        </div><!-- /input-group -->
+    <div class='area d3box'></div>
+    <div class='controls'>
+      <div class='bar'>
+        <!-- <div class="toggle"></div> -->
+        <input type="text" class="messageBox" placeholder=' Your Idea'>
+
+        <input class='btn send' type="button" value="Add Idea" />
       </div>
     </div>
-
   </body>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="bower_components/jquery/dist/jquery.min.js"></script>
