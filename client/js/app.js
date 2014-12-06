@@ -15,7 +15,8 @@ $(document).ready(function(){
   socket.onAllMessages(setTreeData);
 
   //Add bubble
-  $('button').on('click', function(){
+  $('.btn.send').on('click', function(){
+    console.log('hello')
     var message = $('input').val();
     var messageObject = {};
     if(nodeSelected){
