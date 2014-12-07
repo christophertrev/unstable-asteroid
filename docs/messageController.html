@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>messageController.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          <h1>messageController.js</h1>
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="Gulpfile.html">
+                    Gulpfile.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="app.html">
+                    app.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="communication.html">
+                    communication.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="display.html">
+                    display.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="messageController.html">
+                    messageController.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="messageModel.html">
+                    messageModel.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.js
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        
+        
+          <div class='highlight'><pre><span class="hljs-pi">'use strict'</span>;
+
+<span class="hljs-keyword">var</span> Message = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./messageModel'</span>),
+    Q       = <span class="hljs-built_in">require</span>(<span class="hljs-string">'q'</span>);
+
+<span class="hljs-comment">/**
+ * [contains helper function to add messages to tree and fetch entire tree]
+ * @type {Object}
+ */</span>
+<span class="hljs-built_in">module</span>.exports = {</pre></div>
+        
+      
+        
+        <p>returns array of all messages on db</p>
+
+        
+          <div class='highlight'><pre>  getFullMessageTree: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(callback)</span> </span>{
+    <span class="hljs-keyword">var</span> getMessageTree = Q.nbind(Message.find, Message);
+
+    getMessageTree({})
+      .then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(messages)</span> </span>{
+        callback(<span class="hljs-built_in">module</span>.exports.constructRootsArray(messages));
+      })
+      .fail(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error)</span> </span>{
+        <span class="hljs-built_in">console</span>.log(error);
+      });
+  },</pre></div>
+        
+      
+        
+        <p>adds message to db
+@params [Object (message, parentID)]</p>
+
+        
+          <div class='highlight'><pre>  addNewMessage: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(messageObject, callback)</span> </span>{
+    <span class="hljs-keyword">if</span> (messageObject.parentID === <span class="hljs-string">'null'</span>) {
+      messageObject.parentID = <span class="hljs-literal">null</span>;
+    }
+    <span class="hljs-keyword">var</span> newMessage = {
+      message: messageObject.message,
+      parentID: messageObject.parentID,
+      childrenID: []
+    };</pre></div>
+        
+      
+        
+        <p>creates promises of query functions</p>
+
+        
+          <div class='highlight'><pre>    <span class="hljs-keyword">var</span> createMessage = Q.nbind(Message.create, Message);
+    <span class="hljs-keyword">var</span> findMessage = Q.nbind(Message.find, Message);</pre></div>
+        
+      
+        
+        <p>creates and saves message to db</p>
+
+        
+          <div class='highlight'><pre>    createMessage(newMessage)
+      .then(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(createdMessage)</span> </span>{
+        <span class="hljs-keyword">return</span> createdMessage;
+      })</pre></div>
+        
+      
+        
+        <p>finds parent of the created message. pushes messageID into childrenID array of parent and saves back to db</p>
+
+        
+          <div class='highlight'><pre>      .then(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(createdMessage)</span> </span>{
+        findMessage({ _id: createdMessage.parentID })
+          .then(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(foundParent)</span> </span>{
+            <span class="hljs-keyword">if</span> (foundParent.length !== <span class="hljs-number">0</span>) {
+              foundParent[<span class="hljs-number">0</span>].childrenID.push(createdMessage._id);
+              Message.update({_id: createdMessage.parentID}, {
+                childrenID: foundParent[<span class="hljs-number">0</span>].childrenID
+              }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, data)</span> </span>{
+                callback(createdMessage);
+              });
+            } <span class="hljs-keyword">else</span> {
+              callback(createdMessage);
+            }
+          });
+      });
+  },
+
+  <span class="hljs-comment">/**
+   * creates array of messages + direct children
+   * @param { Array }
+   * @returns
+   */</span>
+  constructRootsArray: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(arrayOfMessages)</span> </span>{
+    <span class="hljs-keyword">var</span> messages = [],
+        roots = [];</pre></div>
+        
+      
+        
+        <p>clones tree to objects</p>
+
+        
+          <div class='highlight'><pre>    messages = arrayOfMessages.map(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(message)</span> </span>{
+      <span class="hljs-keyword">return</span> <span class="hljs-built_in">module</span>.exports.cloneMessage(message);
+    });</pre></div>
+        
+      
+        
+        <p>pushes messages without parents into roots array</p>
+
+        
+          <div class='highlight'><pre>    messages.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(message)</span> </span>{
+      <span class="hljs-keyword">if</span> (!message.parentID) {
+        roots.push(message);
+      }
+    });
+
+    roots = roots.map(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(root)</span> </span>{
+      <span class="hljs-keyword">return</span> <span class="hljs-built_in">module</span>.exports.constructTree(root, messages);
+    });
+
+    <span class="hljs-keyword">return</span> roots;
+  },
+
+  cloneMessage: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(messageModel)</span> </span>{
+    <span class="hljs-keyword">return</span> {
+      message: messageModel.message,
+      _id: messageModel._id,
+      childrenID: messageModel.childrenID,
+      parentID: messageModel.parentID,
+    }
+  },</pre></div>
+        
+      
+        
+        <p>constructs entire tree</p>
+
+        
+          <div class='highlight'><pre>  constructTree: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(root, arrayOfMessages)</span> </span>{
+    <span class="hljs-keyword">var</span> root = <span class="hljs-built_in">module</span>.exports.cloneMessage(root);
+    root.children = [];
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; root.childrenID.length; i++) {
+      <span class="hljs-keyword">var</span> child = <span class="hljs-built_in">module</span>.exports.findMessageByID(root.childrenID[i], arrayOfMessages);
+      root.children.push(<span class="hljs-built_in">module</span>.exports.constructTree(child, arrayOfMessages));
+    }
+    <span class="hljs-keyword">return</span> root;
+  },
+
+  findMessageByID: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ID, arrayOfMessages)</span> </span>{
+    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; arrayOfMessages.length; i++) {
+      <span class="hljs-keyword">if</span> (<span class="hljs-built_in">String</span>(arrayOfMessages[i]._id) === <span class="hljs-built_in">String</span>(ID)) {
+        <span class="hljs-keyword">return</span> arrayOfMessages[i];
+      }
+    }
+  }
+};</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>server.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          <h1>server.js</h1>
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="Gulpfile.html">
+                    Gulpfile.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="app.html">
+                    app.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="communication.html">
+                    communication.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="display.html">
+                    display.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="messageController.html">
+                    messageController.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="messageModel.html">
+                    messageModel.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.js
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>);
+<span class="hljs-keyword">var</span> app = express();
+<span class="hljs-keyword">var</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>).Server(app);
+<span class="hljs-keyword">var</span> io = <span class="hljs-built_in">require</span>(<span class="hljs-string">'socket.io'</span>)(http);
+<span class="hljs-keyword">var</span> mongoose = <span class="hljs-built_in">require</span>(<span class="hljs-string">'mongoose'</span>);
+<span class="hljs-keyword">var</span> messageController = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./messages/messageController'</span>);
+
+mongoose.connect(<span class="hljs-string">'mongodb://MongoLab-d:tsWFfWiQkrxfZhKZbNOBPVGp3culnVTNs5G7nyd1cbE-@ds050077.mongolab.com:50077/MongoLab-d'</span>);
+
+app.use(express.static(__dirname + <span class="hljs-string">'/../client'</span>) );
+app.use(express.static(__dirname + <span class="hljs-string">'/../client/styles'</span>) );
+
+app.get(<span class="hljs-string">'/'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res)</span> </span>{
+  res.render(<span class="hljs-string">'index'</span>);
+});
+
+io.on(<span class="hljs-string">'connection'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(socket)</span> </span>{</pre></div>
+        
+      
+        
+        <p>send all current messages to the newly connected user</p>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Connected with user'</span>);
+  messageController.getFullMessageTree(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(messages)</span> </span>{
+    socket.emit(<span class="hljs-string">'all messages'</span>, messages);
+  });
+
+  socket.on(<span class="hljs-string">'new message'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(msg)</span> </span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'in new message, message is: '</span>, msg);
+    messageController.addNewMessage(msg, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+      messageController.getFullMessageTree(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(messages)</span> </span>{
+         io.emit(<span class="hljs-string">'all messages'</span>, messages);
+      });
+    });
+  });
+});
+
+<span class="hljs-keyword">var</span> port = process.env.PORT || <span class="hljs-number">8000</span>;
+http.listen(port);</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

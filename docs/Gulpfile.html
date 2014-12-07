@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Gulpfile.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          <h1>Gulpfile.js</h1>
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="Gulpfile.html">
+                    Gulpfile.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="app.html">
+                    app.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="communication.html">
+                    communication.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="display.html">
+                    display.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="messageController.html">
+                    messageController.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="messageModel.html">
+                    messageModel.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.js
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p>npm ‘use strict’;</p>
+
+        
+          <div class='highlight'><pre>
+<span class="hljs-keyword">var</span> gulp      = <span class="hljs-built_in">require</span>(<span class="hljs-string">'gulp'</span>),
+    nodemon   = <span class="hljs-built_in">require</span>(<span class="hljs-string">'gulp-nodemon'</span>),
+    bs        = <span class="hljs-built_in">require</span>(<span class="hljs-string">'browser-sync'</span>),
+    reload    = bs.reload,
+    when      = <span class="hljs-built_in">require</span>(<span class="hljs-string">'gulp-if'</span>),
+    shell     = <span class="hljs-built_in">require</span>(<span class="hljs-string">'gulp-shell'</span>);</pre></div>
+        
+      
+        
+        <p>the paths to our app files</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> paths = {</pre></div>
+        
+      
+        
+        <p>all our client app js files, not including 3rd party js files</p>
+
+        
+          <div class='highlight'><pre>  scripts: [<span class="hljs-string">'client/**/*.js'</span>],
+  html: [<span class="hljs-string">'client/**/*.html'</span>, <span class="hljs-string">'client/index.html'</span>],
+  styles: [<span class="hljs-string">'client/styles/styles.css'</span>],
+  test: [<span class="hljs-string">'specs/**/*.js'</span>]
+};</pre></div>
+        
+      
+        
+        <p>any changes made to your
+client side code will automagically refresh your page
+with the new changes</p>
+
+        
+          <div class='highlight'><pre>gulp.task(<span class="hljs-string">'start'</span>, [<span class="hljs-string">'serve'</span>]
+  ,<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+  bs({
+    notify: <span class="hljs-literal">true</span>,</pre></div>
+        
+      
+        
+        <p>address for server,</p>
+
+        
+          <div class='highlight'><pre>    injectChanges: <span class="hljs-literal">true</span>,
+    files: paths.scripts.concat(paths.html, paths.styles),
+    proxy: <span class="hljs-string">'localhost:8000'</span></pre></div>
+        
+      
+        
+        <p>server: {
+  baseDir:’client’,
+  index: ‘index.html’
+}</p>
+
+        
+          <div class='highlight'><pre>  });
+});</pre></div>
+        
+      
+        
+        <p>gulp.task(‘karma’, shell.task([
+  ‘karma start’
+]));</p>
+
+        
+          <div class='highlight'><pre>gulp.task(<span class="hljs-string">'docs'</span>, shell.task([
+   <span class="hljs-string">'docco client/js/*.js server/*.js server/messages/*.js Gulpfile.js -l linear'</span>
+ ]));</pre></div>
+        
+      
+        
+        <p>start our node server using nodemon</p>
+
+        
+          <div class='highlight'><pre>gulp.task(<span class="hljs-string">'serve'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+  nodemon({script: <span class="hljs-string">'server/server.js'</span>, ignore: <span class="hljs-string">'node_modules/**/*.js'</span>});
+});
+
+gulp.task(<span class="hljs-string">'default'</span>, [<span class="hljs-string">'start'</span>]);</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

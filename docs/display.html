@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>display.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          <h1>display.js</h1>
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="Gulpfile.html">
+                    Gulpfile.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="app.html">
+                    app.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="communication.html">
+                    communication.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="display.html">
+                    display.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="messageController.html">
+                    messageController.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="messageModel.html">
+                    messageModel.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.js
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        
+        
+          <div class='highlight'><pre>
+<span class="hljs-keyword">var</span> width = <span class="hljs-number">960</span>,
+    height = <span class="hljs-number">500</span>,
+    root;
+
+<span class="hljs-keyword">var</span> force = d3.layout.force()
+    .size([width, height])
+    .on(<span class="hljs-string">"tick"</span>, tick);
+
+<span class="hljs-keyword">var</span> zoom = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+  svg.attr(<span class="hljs-string">"transform"</span>, <span class="hljs-string">"translate("</span> + d3.event.translate + <span class="hljs-string">")scale("</span> + d3.event.scale + <span class="hljs-string">")"</span>);
+};
+
+<span class="hljs-keyword">var</span> svg = d3.select(<span class="hljs-string">".d3box"</span>).append(<span class="hljs-string">"svg"</span>)</pre></div>
+        
+      
+        
+        <p>.attr(“width”, width)
+.attr(“height”, height)</p>
+
+        
+          <div class='highlight'><pre>    .attr(<span class="hljs-string">"class"</span>,<span class="hljs-string">'graph'</span>)
+    .append(<span class="hljs-string">'g'</span>)
+      .call(d3.behavior.zoom().scaleExtent([<span class="hljs-number">0.7</span> , <span class="hljs-number">8</span>]).center([<span class="hljs-number">480</span>, <span class="hljs-number">250</span>]).on(<span class="hljs-string">'zoom'</span>, zoom))
+    .append(<span class="hljs-string">'g'</span>);
+
+svg.append(<span class="hljs-string">'rect'</span>)
+  .attr(<span class="hljs-string">'width'</span>, <span class="hljs-number">1000</span>)
+  .attr(<span class="hljs-string">'height'</span>, <span class="hljs-number">1000</span>)
+  .attr(<span class="hljs-string">'x'</span>, <span class="hljs-number">0</span>)
+  .attr(<span class="hljs-string">'y'</span>, <span class="hljs-number">0</span>)
+  .attr(<span class="hljs-string">'class'</span>, <span class="hljs-string">'overlay'</span>);
+
+<span class="hljs-keyword">var</span> link = svg.selectAll(<span class="hljs-string">".link"</span>),
+    node = svg.selectAll(<span class="hljs-string">".node"</span>);
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">update</span><span class="hljs-params">()</span> </span>{
+  <span class="hljs-keyword">var</span> nodes = flatten(treeData);
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'tree'</span>,treeData);
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'nodes'</span>,nodes);
+  <span class="hljs-keyword">var</span> links = d3.layout.tree().links(nodes);
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'links'</span>,links)</pre></div>
+        
+      
+        
+        <p>Restart the force layout.</p>
+
+        
+          <div class='highlight'><pre>  force
+      .nodes(nodes)
+      .links(links)
+      .charge(-<span class="hljs-number">500</span>)
+      .linkDistance(<span class="hljs-number">100</span>)
+      .start();</pre></div>
+        
+      
+        
+        <p>Update the links…</p>
+
+        
+          <div class='highlight'><pre>  link = link.data(links, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> d.target.id; });</pre></div>
+        
+      
+        
+        <p>Exit any old links.</p>
+
+        
+          <div class='highlight'><pre>  link.exit().remove();</pre></div>
+        
+      
+        
+        <p>Enter any new links.</p>
+
+        
+          <div class='highlight'><pre>  link.enter().insert(<span class="hljs-string">"line"</span>, <span class="hljs-string">".node"</span>)
+      .attr(<span class="hljs-string">"class"</span>, <span class="hljs-string">"link"</span>)
+      .attr(<span class="hljs-string">"x1"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> d.source.x; })
+      .attr(<span class="hljs-string">"y1"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> d.source.y; })
+      .attr(<span class="hljs-string">"x2"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> d.target.x; })
+      .attr(<span class="hljs-string">"y2"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> d.target.y; });</pre></div>
+        
+      
+        
+        <p>Update the nodes…
+node = node.data(nodes).style(“fill”, color);</p>
+
+        
+          <div class='highlight'><pre>
+  node = node.data(nodes, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> d.id; });</pre></div>
+        
+      
+        
+        <p>Exit any old nodes.</p>
+
+        
+          <div class='highlight'><pre>  node.exit().remove();</pre></div>
+        
+      
+        
+        <p>Enter any new nodes.</p>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-keyword">var</span> g = node.enter().append(<span class="hljs-string">'g'</span>)
+      .attr(<span class="hljs-string">"transform"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span></span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"translate("</span> + d.x + <span class="hljs-string">","</span> + d.y + <span class="hljs-string">")"</span>;
+      })
+      .call(force.drag);
+
+  g.attr(<span class="hljs-string">"class"</span>, <span class="hljs-string">"node"</span>)
+    .append(<span class="hljs-string">"circle"</span>)
+    .attr(<span class="hljs-string">"r"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> <span class="hljs-built_in">Math</span>.sqrt(d.size) / <span class="hljs-number">10</span> || <span class="hljs-number">15</span>; })
+    .style(<span class="hljs-string">"fill"</span>, color)
+    .on(<span class="hljs-string">"click"</span>, click);
+  g.append(<span class="hljs-string">"text"</span>)
+    .attr(<span class="hljs-string">"class"</span>, <span class="hljs-string">"label"</span>)
+    .attr(<span class="hljs-string">"dx"</span>, <span class="hljs-number">0</span>)
+    .attr(<span class="hljs-string">"dy"</span>, <span class="hljs-string">".35em"</span>)
+    .text(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span></span>{<span class="hljs-keyword">return</span> d.message});    
+
+  node.attr(<span class="hljs-string">"class"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span></span>{
+    <span class="hljs-keyword">if</span>(d._id === nodeSelected) {
+      <span class="hljs-keyword">return</span> <span class="hljs-string">"node selected"</span>;
+    }<span class="hljs-keyword">else</span>{
+      <span class="hljs-keyword">return</span> <span class="hljs-string">"node"</span>;
+    }
+  });
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">tick</span><span class="hljs-params">()</span> </span>{
+  link.attr(<span class="hljs-string">"x1"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> d.source.x; })
+      .attr(<span class="hljs-string">"y1"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> d.source.y; })
+      .attr(<span class="hljs-string">"x2"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> d.target.x; })
+      .attr(<span class="hljs-string">"y2"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> d.target.y; });
+
+  node.attr(<span class="hljs-string">"transform"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span></span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"translate("</span> + d.x + <span class="hljs-string">","</span> + d.y + <span class="hljs-string">")"</span>;
+      });
+
+}</pre></div>
+        
+      
+        
+        <p>Color leaf nodes orange, and packages white or blue.</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">color</span><span class="hljs-params">(d)</span> </span>{</pre></div>
+        
+      
+        
+        <p>return d._children ? “#3182bd” : d.children ? “#c6dbef” : “#fd8d3c”;</p>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-keyword">return</span> <span class="hljs-string">"#fd8d3c"</span>
+}
+
+<span class="hljs-keyword">var</span> nodeSelected;</pre></div>
+        
+      
+        
+        <p>Toggle children on click.</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">click</span><span class="hljs-params">(d)</span> </span>{</pre></div>
+        
+      
+        
+        <p>d.attr(“class”, “selected”);
+console.log(force.nodes());
+console.log(‘obj’,d)</p>
+
+        
+          <div class='highlight'><pre>  nodeSelected = nodeSelected === d._id ? <span class="hljs-literal">null</span> : d._id;
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'SELECTED NODE'</span>,nodeSelected)
+  update();</pre></div>
+        
+      
+        
+        <p>d.selected = !d.selected;
+if (!d3.event.defaultPrevented) {
+  if (d.children) {
+    d._children = d.children;
+    d.children = null;
+  } else {
+    d.children = d._children;
+    d._children = null;
+  }
+  update();
+}</p>
+
+        
+          <div class='highlight'><pre>}</pre></div>
+        
+      
+        
+        <p>Returns a list of all nodes under the root.</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">flatten</span><span class="hljs-params">(roots)</span> </span>{
+  <span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>;
+  <span class="hljs-keyword">var</span> nodes = [];
+  roots.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(root)</span></span>{
+    recurse(root);
+  });
+
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">recurse</span><span class="hljs-params">(node)</span> </span>{
+    <span class="hljs-keyword">if</span> (node.children) node.children.forEach(recurse);
+    node.id = node._id;
+    nodes.push(node);
+  }</pre></div>
+        
+      
+        
+        <p>console.log(nodes)</p>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-keyword">return</span> nodes;
+}</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

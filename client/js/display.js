@@ -31,10 +31,10 @@ var link = svg.selectAll(".link"),
 
 function update() {
   var nodes = flatten(treeData);
-  // console.log('tree',treeData);
- console.log('nodes',treeData);
+  console.log('tree',treeData);
+  console.log('nodes',nodes);
   var links = d3.layout.tree().links(nodes);
-  // console.log('links',links)
+  console.log('links',links)
 
   // Restart the force layout.
   force
