@@ -7,13 +7,28 @@ var force = d3.layout.force()
     .size([width, height])
     .on("tick", tick);
 
+var zoom = function() {
+  svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+};
+
 var svg = d3.select(".d3box").append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .attr("class",'graph');
+    // .attr("width", width)
+    // .attr("height", height)
+    .attr("class",'graph')
+    .append('g')
+      .call(d3.behavior.zoom().scaleExtent([0.7 , 8]).center([480, 250]).on('zoom', zoom))
+    .append('g');
+
+svg.append('rect')
+  .attr('width', 1000)
+  .attr('height', 1000)
+  .attr('x', 0)
+  .attr('y', 0)
+  .attr('class', 'overlay');
 
 var link = svg.selectAll(".link"),
     node = svg.selectAll(".node");
+
 
 // var treeData = [
 //   {
