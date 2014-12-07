@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+  	<link rel="stylesheet" type="text/css" href="styles/styles.css">
+    <link rel="icon" type="image/png" href="stormSmall.png" />
+  </head>
+  <body>
+    <div class='area d3box'></div>
+    <div class='controls'>
+      <div class='bar'>
+        <!-- <div class="toggle"></div> -->
+        <input type="text" class="messageBox" placeholder=' Your Idea'>
+        <input class='btn send' type="button" value="Add Idea" />
+      </div>
+    </div>
+  </body>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+  <script src="js/display.js"></script>
+  <script src="js/communication.js"></script>
+  <script src="js/app.js"></script>
+
+</html>
