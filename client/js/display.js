@@ -29,50 +29,12 @@ svg.append('rect')
 var link = svg.selectAll(".link"),
     node = svg.selectAll(".node");
 
-
-// var treeData = [
-//   {
-//     "name": "Top Level",
-//     "parent": "null",
-//     "children": [
-//       {
-//         "name": "Level 2: A",
-//         "parent": "Top Level",
-//         "children": [
-//           {
-//             "name": "Son of A",
-//             "parent": "Level 2: A"
-//           },
-//           {
-//             "name": "Daughter of A",
-//             "parent": "Level 2: A"
-//           },
-//           {
-//             "name": "Other Daughter of A",
-//             "parent": "Level 2: A"
-//           },
-           
-//         ]
-//       },
-//       {
-//         "name": "Level 2: B",
-//         "parent": "Top Level"
-//       }
-//     ]
-//   },
-//   {
-//     "name": "Chris",
-//     "parent": "null"
-//   }
-// ];
-
-  //update();
-
-
 function update() {
   var nodes = flatten(treeData);
-  //console.log(treeData);
+  console.log('tree',treeData);
+  console.log('nodes',nodes);
   var links = d3.layout.tree().links(nodes);
+  console.log('links',links)
 
   // Restart the force layout.
   force
@@ -182,7 +144,7 @@ function flatten(roots) {
 
   function recurse(node) {
     if (node.children) node.children.forEach(recurse);
-    node.id = ++i;
+    node.id = node._id;
     nodes.push(node);
   }
   //console.log(nodes)
