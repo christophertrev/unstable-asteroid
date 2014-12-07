@@ -15,10 +15,10 @@ module.exports = {
 
     getMessageTree({})
       .then(function (messages) {
-        callback(module.exports.constructTree(messages));
+        callback(module.exports.constructRootsArray(messages));
       })
       .fail(function (error) {
-        console.log('error');
+        console.log(error);
       });
   },
 
@@ -28,7 +28,6 @@ module.exports = {
     if (messageObject.parentID === 'null') {
       messageObject.parentID = null;
     }
-
     var newMessage = {
       message: messageObject.message,
       parentID: messageObject.parentID,
@@ -42,24 +41,24 @@ module.exports = {
     //creates and saves message to db
     createMessage(newMessage)
       .then(function(createdMessage) {
-        callback();
         return createdMessage;
+      })
+      // finds parent of the created message. pushes messageID into childrenID array of parent and saves back to db
+      .then(function(createdMessage) {
+        findMessage({ _id: createdMessage.parentID })
+          .then(function(foundParent) {
+            if (foundParent.length !== 0) {
+              foundParent[0].childrenID.push(createdMessage._id);
+              Message.update({_id: createdMessage.parentID}, {
+                childrenID: foundParent[0].childrenID
+              }, function(err, data) {
+                callback(createdMessage);
+              });
+            } else {
+              callback(createdMessage);
+            }
+          });
       });
-
-      //finds parent of the created message. pushes messageID into childrenID array of parent and saves back to db
-      // .then(function(createdMessage) {
-      //   findMessage({ _id: createdMessage.parentID })
-      //     .then(function(foundParent) {
-      //       if (foundParent) {
-      //         foundParent.childrenID.push(createdMessage._id);
-      //         foundParent.save(function() {
-      //           Message.find({}, function(messages) {
-      //             console.log('db size', messages)
-      //           });
-      //         });
-      //       }
-      //     });
-      // });
   },
 
   /**
@@ -67,28 +66,54 @@ module.exports = {
    * @param { Array }
    * @returns
    */
-  constructTree: function(arrayOfMessages) {
-    var messages = [];
+  constructRootsArray: function(arrayOfMessages) {
+    var messages = [],
+        roots = [];
 
-    // pushes roots to array
-    arrayOfMessages.forEach(function(message) {
-
-      //adds new children array property to messages
-      message.children = [];
-
-      message.childrenID.forEach(function(childID) {
-
-        //checks entire message array for matching childID and then pushes those messages into children property
-        arrayOfMessages.forEach(function(messageToCompare) {
-          if (messageToCompare._id.equals(childID)) {
-            message.children.push(messageToCompare);
-          }
-        });
-      });
-
-      messages.push(message);
+    //clones tree to objects
+    messages = arrayOfMessages.map(function(message) {
+      return module.exports.cloneMessage(message);
     });
 
-    return messages;
+    //pushes messages without parents into roots array
+    messages.forEach(function(message) {
+      if (!message.parentID) {
+        roots.push(message);
+      }
+    });
+
+    roots = roots.map(function(root) {
+      return module.exports.constructTree(root, messages);
+    });
+
+    return roots;
+  },
+
+  cloneMessage: function(messageModel) {
+    return {
+      message: messageModel.message,
+      _id: messageModel._id,
+      childrenID: messageModel.childrenID,
+      parentID: messageModel.parentID,
+    }
+  },
+
+  //constructs entire tree
+  constructTree: function(root, arrayOfMessages) {
+    var root = module.exports.cloneMessage(root);
+    root.children = [];
+    for (var i = 0; i < root.childrenID.length; i++) {
+      var child = module.exports.findMessageByID(root.childrenID[i], arrayOfMessages);
+      root.children.push(module.exports.constructTree(child, arrayOfMessages));
+    }
+    return root;
+  },
+
+  findMessageByID: function(ID, arrayOfMessages) {
+    for(var i = 0; i < arrayOfMessages.length; i++) {
+      if (String(arrayOfMessages[i]._id) === String(ID)) {
+        return arrayOfMessages[i];
+      }
+    }
   }
 };
