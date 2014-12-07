@@ -14,23 +14,20 @@ $(document).ready(function(){
   //Set listener
   socket.onAllMessages(setTreeData);
 
-  //Add bubble
-  $('.btn.send').on('click', function(){
+  //Add bubble on submit
+  $('.inputbox').on('submit', function(e){
+    e.preventDefault();
     console.log('hello')
-    var message = $('input').val();
+    var message = $('.messageBox').val();
+    $('.messageBox').val('');
     var messageObject = {};
     if(nodeSelected){
-      // if(!nodeSelected.children){
-      //   nodeSelected.children = [];
-      // }
+      //Send over message and parentID
       messageObject = {message: message, parentID: nodeSelected};
-      // nodeSelected.children.push({name: message, parent: nodeSelected.id});
     }else{
       messageObject = {message: message, parentID: 'null'};
-      // treeData.push(messageObject);
     }
     socket.sendMessage(messageObject);
-    // update();
   });
 
 });
