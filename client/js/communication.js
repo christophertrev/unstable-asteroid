@@ -9,14 +9,14 @@ var Socket = function(){
 
 Socket.prototype.sendMessage = function(message){
   console.log('sending message');
-  console.log(message);
+  // console.log(message);
   this.connection.emit('new message', message);
 };
 
 Socket.prototype.onAllMessages = function(callback){
   this.connection.on('all messages', function(messageReceived){
     console.log('recieved all messages');
-    console.log(messageReceived);
+    // console.log(messageReceived);
     callback(messageReceived);
   });
 };

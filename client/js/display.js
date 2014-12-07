@@ -31,10 +31,10 @@ var link = svg.selectAll(".link"),
 
 function update() {
   var nodes = flatten(treeData);
-  console.log('tree',treeData);
-  console.log('nodes',nodes);
+  // console.log('tree',treeData);
+ console.log('nodes',treeData);
   var links = d3.layout.tree().links(nodes);
-  console.log('links',links)
+  // console.log('links',links)
 
   // Restart the force layout.
   force
@@ -87,7 +87,7 @@ function update() {
     .text(function(d){return d.message});    
 
   node.attr("class", function(d){
-    if(d === nodeSelected) {
+    if(d._id === nodeSelected) {
       return "node selected";
     }else{
       return "node";
@@ -119,7 +119,8 @@ function click(d) {
   // d.attr("class", "selected");
   //console.log(force.nodes());
   // console.log('obj',d)
-  nodeSelected = nodeSelected === d ? null : d;
+  nodeSelected = nodeSelected === d._id ? null : d._id;
+  console.log('SELECTED NODE',nodeSelected)
   update();
   //d.selected = !d.selected;
   // if (!d3.event.defaultPrevented) {

@@ -23,7 +23,7 @@ $(document).ready(function(){
       // if(!nodeSelected.children){
       //   nodeSelected.children = [];
       // }
-      messageObject = {message: message, parentID: nodeSelected.id};
+      messageObject = {message: message, parentID: nodeSelected};
       // nodeSelected.children.push({name: message, parent: nodeSelected.id});
     }else{
       messageObject = {message: message, parentID: 'null'};
