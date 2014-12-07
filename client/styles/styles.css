@@ -58,6 +58,8 @@ body {
 .selected {
   stroke: lightyellow;
   stroke-width: 5px;
+  stroke-style: dotted;
+  stroke-dasharray: 5,5;
   /*box-shadow: 0px 0px 5px #fff;*/
 }
 
@@ -89,3 +91,23 @@ html, body, .d3box {
   width: 100%;
 }
 
+
+@-webkit-keyframes rotate {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to { 
+    -webkit-transform: rotate(360deg);
+  }
+}
+.selected rect 
+{
+    -webkit-animation-name:             rotate; 
+    -webkit-animation-duration:         1.5s; 
+    -webkit-animation-iteration-count:  infinite;
+    -webkit-animation-timing-function: linear;
+}
+rect {
+  width: 100;
+  height: 100;
+}

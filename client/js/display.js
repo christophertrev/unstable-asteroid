@@ -76,8 +76,10 @@ function update() {
       .call(force.drag);
 
   g.attr("class", "node")
-    .append("circle")
-    .attr("r", function(d) { return Math.sqrt(d.size) / 10 || 15; })
+    .append("rect")
+    .attr('width',100)
+    .attr('height',10)
+    // .attr("r", function(d) { return Math.sqrt(d.size) / 10 || 15; })
     .style("fill", color)
     .on("click", click);
   g.append("text")
