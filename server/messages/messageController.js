@@ -61,6 +61,14 @@ module.exports = {
       });
   },
 
+  clearDB: function(req, res) {
+    Message.remove(function(err) {
+      if (!err) {
+        res.redirect('/storm.html');
+      }
+    });
+  },
+
   /**
    * creates array of messages + direct children
    * @param { Array }
