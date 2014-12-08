@@ -21,3 +21,9 @@ Socket.prototype.onAllMessages = function(callback){
   });
 };
 
+
+Socket.prototype.sendEdit = function(message){
+  console.log('sending Edits for',message);
+  this.connection.emit('edit message', message);
+};
+

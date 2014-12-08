@@ -75,7 +75,7 @@ function update() {
   // Update the nodes…
   //node = node.data(nodes).style("fill", color);
 
-  node = node.data(nodes, function(d) { return d.id; });
+  node = node.data(nodes, function(d) { return [d.id,d.message]; });
 
 
 
