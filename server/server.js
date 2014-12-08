@@ -15,7 +15,7 @@ app.get('/', function(req, res) {
   res.render('index');
 });
 
-//clears db
+//clears DB
 app.get('/storm.html/clear', function(req, res) {
 messageController.clearDB(req, res);
 });

@@ -32,6 +32,9 @@
     "gulp-if": "^1.2.5",
     "gulp-nodemon": "^1.0.4",
     "gulp-shell": "^0.2.11",
-    "should": "^4.3.0"
+    "should": "^4.3.0",
+    "mocha": "^2.0.1",
+    "should": "^4.3.0",
+    "supertest": "^0.15.0"
   }
 }

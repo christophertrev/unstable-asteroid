@@ -61,6 +61,7 @@ module.exports = {
       });
   },
 
+  //middleware function that clears DB
   clearDB: function(req, res) {
     Message.remove(function(err) {
       if (!err) {
@@ -70,9 +71,23 @@ module.exports = {
   },
 
   /**
+   * edits single message in DB
+   * @param  {[Object]}   messageObject
+   * @param  {Function} callback
+   * @return {[type]}
+   */
+  editMessage: function(messageObject, callback) {
+    Message.update({ _id: messageObject._id}, { message: messageObject.message }, function(err, updatedMessage) {
+      if (!err) {
+        callback();
+      }
+    });
+  },
+
+  /**
    * creates array of messages + direct children
-   * @param { Array }
-   * @returns
+   * @param {[Array]}
+   * @returns {[Array]}
    */
   constructRootsArray: function(arrayOfMessages) {
     var messages = [],
