@@ -30,9 +30,25 @@ var link = svg.selectAll(".link"),
     node = svg.selectAll(".node");
 
 function update() {
-  var nodes = flatten(treeData);
+  var oldNodes = force.nodes();
+  var newNodes = flatten(treeData);
+
+  //copy over position properties from old nodes
+  for (var i = 0; i < oldNodes.length; ++i) {
+    for (var j = 0; j < newNodes.length; ++j) {
+      if (oldNodes[i].id === newNodes[j].id) {
+        newNodes[j].x = oldNodes[i].x;
+        newNodes[j].y = oldNodes[i].y;
+        break;
+      }
+    }
+  }
+
+  var nodes = newNodes;
+
   console.log('tree',treeData);
   console.log('nodes',nodes);
+
   var links = d3.layout.tree().links(nodes);
   // Restart the force layout.
   force
