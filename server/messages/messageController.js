@@ -84,6 +84,46 @@ module.exports = {
     });
   },
 
+  removeMessage: function(messageObject, callback) {
+    Message.remove({ _id: messageObject._id }, function(err) {
+
+      //if messageObject has parent then update parent
+      if (!err && messageObject.parentID) {
+        Message.findOne({_id: messageObject.parentID}, function(err, foundParent) {
+          var childrenID = foundParent.childrenID;
+          var updatedChildrenID = [];
+
+          childrenID.forEach(function(ID) {
+            if (String(ID) !== String(messageObject._id)) {
+              updatedChildrenID.push(ID);
+            }
+          });
+
+          Message.update({_id: messageObject.parentID}, {childrenID: updatedChildrenID}, function(err, data) {
+            callback();
+          });
+        });
+      } else {
+        callback();
+      }
+    });
+
+  },
+
+  //removes ID from all childrenID arrays //NOT USED
+  removeChildReferenceFromParent: function(messageObject, callback) {
+    Message.findOne({_id: messageObject.parentID}, function(err, foundParent) {
+      var childrenID = foundParent.childrenID;
+      var updatedChildrenID = [];
+      childrenID.forEach(function(ID) {
+        if (ID !== messageObject._id) {
+          updatedChildrenID.push(ID);
+        }
+      });
+    });
+
+  },
+
   /**
    * creates array of messages + direct children
    * @param {[Array]}
