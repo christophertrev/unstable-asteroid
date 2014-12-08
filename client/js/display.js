@@ -34,8 +34,6 @@ function update() {
   console.log('tree',treeData);
   console.log('nodes',nodes);
   var links = d3.layout.tree().links(nodes);
-  console.log('links',links)
-
   // Restart the force layout.
   force
       .nodes(nodes)
