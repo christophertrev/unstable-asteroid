@@ -52,7 +52,7 @@ function update() {
       .nodes(nodes)
       .links(links)
       .charge(-1000)
-      .linkDistance(200)
+      .linkDistance(75)
       .start();
 
  
