@@ -46,17 +46,16 @@ function update() {
 
   var nodes = newNodes;
 
-  console.log('tree',treeData);
-  console.log('nodes',nodes);
-
   var links = d3.layout.tree().links(nodes);
   // Restart the force layout.
   force
       .nodes(nodes)
       .links(links)
-      .charge(-500)
-      .linkDistance(100)
+      .charge(-1000)
+      .linkDistance(200)
       .start();
+
+ 
 
   // Update the links…
   link = link.data(links, function(d) { return d.target.id; });
@@ -76,8 +75,7 @@ function update() {
   //node = node.data(nodes).style("fill", color);
 
   node = node.data(nodes, function(d) { return [d.id,d.message]; });
-
-
+  node.selectAll("circle").data(nodes, function(d) { return d.id; });
 
   // Exit any old nodes.
   node.exit().remove();
@@ -87,16 +85,19 @@ function update() {
       .attr("transform", transform)
       .on("click", click)
       .call(force.drag);
-
   g.attr("class", "node")
     .append("circle")
-    .attr("r", radius)
-    .style("fill", color);
+    .attr("r", radius);
+
+  node.selectAll("circle").style("fill", color); 
+
   g.append("text")
     .attr("class", "label")
     .attr("dx", dx)
     .attr("dy", dy)
-    .text(function(d){return d.message});    
+    .attr("text-anchor", textAnchor)
+    .attr("font-size",fontSize)
+    .text(function(d){return d.message}); 
 
   node.attr("class", function(d){
     if(d._id === nodeSelected) {
@@ -119,12 +120,21 @@ function tick() {
 
 // Color leaf nodes orange, and packages white or blue.
 function color(d) {
-  // return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
-  return "#fd8d3c"
+  var maxChildren = 10;
+  var maxChildrenColor = "#ff3300";
+  var noChildrenColor = "#FBB03B";
+  var interpolateColor  = d3.scale.linear().domain([0,maxChildren]).range([noChildrenColor,maxChildrenColor]);
+
+  return interpolateColor(Math.min(maxChildren, d.children.length));
+
 }
 
 function radius(d) {
-  return Math.sqrt(d.size) / 10 || 15;
+  var maxDepth = 5;
+  var maxSize = 40;
+  var minSize = 20;
+  var interpolateSize = d3.scale.linear().domain([0,maxDepth]).range([maxSize, minSize]);
+  return interpolateSize(Math.min(maxDepth, d.depth));
 }
 
 function transform(d) {
@@ -139,26 +149,22 @@ function dy(d) {
   return ".35em";
 }
 
+function textAnchor(d){
+  return "middle";
+}
+
+function fontSize(d){
+  var minFontSize = 6;
+  var maxFontSize = 30;
+  var textLength = d.message.length;
+  var interpolateSize = d3.scale.linear().domain([15,1]).range([minFontSize,maxFontSize]);
+  return interpolateSize(textLength);
+}
 var nodeSelected;
 // Toggle children on click.
 function click(d) {
-  // d.attr("class", "selected");
-  //console.log(force.nodes());
-  // console.log('obj',d)
   nodeSelected = nodeSelected === d._id ? null : d._id;
-  console.log('SELECTED NODE',nodeSelected)
   update();
-  //d.selected = !d.selected;
-  // if (!d3.event.defaultPrevented) {
-  //   if (d.children) {
-  //     d._children = d.children;
-  //     d.children = null;
-  //   } else {
-  //     d.children = d._children;
-  //     d._children = null;
-  //   }
-  //   update();
-  // }
 }
 
 // Returns a list of all nodes under the root.
@@ -169,12 +175,18 @@ function flatten(roots) {
     recurse(root);
   });
 
-  function recurse(node) {
-    if (node.children) node.children.forEach(recurse);
+  function recurse(node, depth) {
+    depth = depth || 0;
+    if (node.children){
+      for(var i = 0; i < node.children.length; i++){
+        recurse(node.children[i], depth+1);
+      }
+    } 
+
+    node.depth = depth;
     node.id = node._id;
     nodes.push(node);
   }
-  //console.log(nodes)
   return nodes;
 }
 
