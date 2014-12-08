@@ -70,20 +70,18 @@ function update() {
 
   // Enter any new nodes.
   var g = node.enter().append('g')
-      .attr("transform", function(d){
-        return "translate(" + d.x + "," + d.y + ")";
-      })
+      .attr("transform", transform)
       .call(force.drag);
 
   g.attr("class", "node")
     .append("circle")
-    .attr("r", function(d) { return Math.sqrt(d.size) / 10 || 15; })
+    .attr("r", radius)
     .style("fill", color)
     .on("click", click);
   g.append("text")
     .attr("class", "label")
-    .attr("dx", 0)
-    .attr("dy", ".35em")
+    .attr("dx", dx)
+    .attr("dy", dy)
     .text(function(d){return d.message});    
 
   node.attr("class", function(d){
@@ -101,9 +99,7 @@ function tick() {
       .attr("x2", function(d) { return d.target.x; })
       .attr("y2", function(d) { return d.target.y; });
 
-  node.attr("transform", function(d){
-        return "translate(" + d.x + "," + d.y + ")";
-      });
+  node.attr("transform", transform);
 
 }
 
@@ -111,6 +107,22 @@ function tick() {
 function color(d) {
   // return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
   return "#fd8d3c"
+}
+
+function radius(d) {
+  return Math.sqrt(d.size) / 10 || 15;
+}
+
+function transform(d) {
+  return "translate(" + d.x + "," + d.y + ")";
+}
+
+function dx(d) {
+  return 0;
+}
+
+function dy(d) {
+  return ".35em";
 }
 
 var nodeSelected;
