@@ -121,6 +121,7 @@ header .intro-text .name {
 header .intro-text .skills {
     font-size: 1.25em;
     font-weight: 300;
+    margin-bottom: 10px;
 }
 
 @media(min-width:768px) {
@@ -143,3 +144,16 @@ header .intro-text .skills {
     height: 300px;
     width: 300px;
 }
+
+div .circular {
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    /*padding-right: 20px;*/
+}
+
+
