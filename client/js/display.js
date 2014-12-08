@@ -84,7 +84,7 @@ function update() {
   var g = node.enter().append('g')
       .attr("transform", transform)
       .on("click", click)
-      .call(force.drag);
+
   g.attr("class", "node")
     .append("circle")
     .attr("r", radius);
@@ -163,8 +163,11 @@ function fontSize(d){
 var nodeSelected;
 // Toggle children on click.
 function click(d) {
-  nodeSelected = nodeSelected === d._id ? null : d._id;
-  update();
+  if (!d3.event.defaultPrevented) {
+    nodeSelected = nodeSelected === d._id ? null : d._id;
+    console.log('SELECTED NODE',nodeSelected)
+    update();
+  }
 }
 
 // Returns a list of all nodes under the root.
