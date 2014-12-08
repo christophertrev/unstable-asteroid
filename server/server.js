@@ -14,6 +14,11 @@ app.get('/', function(req, res) {
   res.render('index');
 });
 
+//clears db
+app.get('/storm.html/clear', function(req, res) {
+messageController.clearDB(req, res);
+});
+
 io.on('connection', function(socket) {
   //send all current messages to the newly connected user
   console.log('Connected with user');
