@@ -35,6 +35,17 @@ io.on('connection', function(socket) {
       });
     });
   });
+
+  socket.on('edit message',function(msg){
+    console.log('editing message, message is: ', msg);
+    messageController.editMessage(msg,function(){
+       console.log('editing message')
+       messageController.getFullMessageTree(function(messages) {
+         console.log('sending',messages)
+         io.emit('all messages', messages);
+      });
+    })
+  })
 });
 
 var port = process.env.PORT || 8000;

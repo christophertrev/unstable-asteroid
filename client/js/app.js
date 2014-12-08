@@ -30,5 +30,18 @@ $(document).ready(function(){
     socket.sendMessage(messageObject);
   });
 
+  $('.btn.edit').on('click',function(e){
+    //emit message to db
+    var message = $('.messageBox').val();
+    $('.messageBox').val('');
+    var messageObject = {};
+    if(nodeSelected){
+      //Send over message and parentID
+      messageObject = {message: message, _id: nodeSelected};
+      socket.sendEdit(messageObject);
+    }
+
+  })
+
 });
 
