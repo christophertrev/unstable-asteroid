@@ -69,13 +69,13 @@ function update() {
   // Enter any new nodes.
   var g = node.enter().append('g')
       .attr("transform", transform)
+      .on("click", click)
       .call(force.drag);
 
   g.attr("class", "node")
     .append("circle")
     .attr("r", radius)
-    .style("fill", color)
-    .on("click", click);
+    .style("fill", color);
   g.append("text")
     .attr("class", "label")
     .attr("dx", dx)
