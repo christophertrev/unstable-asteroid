@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>app.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          <h1>app.js</h1>
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="Gulpfile.html">
+                    Gulpfile.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="app.html">
+                    app.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="communication.html">
+                    communication.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="display.html">
+                    display.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="messageController.html">
+                    messageController.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="messageModel.html">
+                    messageModel.js
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.js
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p>Tree is empty object</p>
+
+        
+          <div class='highlight'><pre>treeData = [];
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setTreeData</span><span class="hljs-params">(data)</span></span>{
+  treeData = data ? data : treeData;
+  update();
+};
+
+$(<span class="hljs-built_in">document</span>).ready(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{</pre></div>
+        
+      
+        
+        <p>Make connection </p>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-keyword">var</span> socket = <span class="hljs-keyword">new</span> Socket();</pre></div>
+        
+      
+        
+        <p>Set listener</p>
+
+        
+          <div class='highlight'><pre>  socket.onAllMessages(setTreeData);</pre></div>
+        
+      
+        
+        <p>Add bubble</p>
+
+        
+          <div class='highlight'><pre>  $(<span class="hljs-string">'.btn.send'</span>).on(<span class="hljs-string">'click'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'hello'</span>)
+    <span class="hljs-keyword">var</span> message = $(<span class="hljs-string">'input'</span>).val();
+    <span class="hljs-keyword">var</span> messageObject = {};
+    <span class="hljs-keyword">if</span>(nodeSelected){</pre></div>
+        
+      
+        
+        <p>if(!nodeSelected.children){
+  nodeSelected.children = [];
+}</p>
+
+        
+          <div class='highlight'><pre>      messageObject = {message: message, parentID: nodeSelected};</pre></div>
+        
+      
+        
+        <p>nodeSelected.children.push({name: message, parent: nodeSelected.id});</p>
+
+        
+          <div class='highlight'><pre>    }<span class="hljs-keyword">else</span>{
+      messageObject = {message: message, parentID: <span class="hljs-string">'null'</span>};</pre></div>
+        
+      
+        
+        <p>treeData.push(messageObject);</p>
+
+        
+          <div class='highlight'><pre>    }
+    socket.sendMessage(messageObject);</pre></div>
+        
+      
+        
+        <p>update();</p>
+
+        
+          <div class='highlight'><pre>  });
+
+});</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>
