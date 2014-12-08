@@ -26,7 +26,12 @@
     "socket.io": "^1.2.1"
   },
   "devDependencies": {
+    "browser-sync": "^1.7.2",
     "chai": "^1.10.0",
+    "gulp": "^3.8.10",
+    "gulp-if": "^1.2.5",
+    "gulp-nodemon": "^1.0.4",
+    "gulp-shell": "^0.2.11",
     "should": "^4.3.0"
   }
 }

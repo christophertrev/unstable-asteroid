@@ -9,6 +9,7 @@ mongoose.connect('mongodb://MongoLab-d:tsWFfWiQkrxfZhKZbNOBPVGp3culnVTNs5G7nyd1c
 
 app.use(express.static(__dirname + '/../client') );
 app.use(express.static(__dirname + '/../client/styles') );
+app.use('/docs', express.static(__dirname + '/../docs')  )
 
 app.get('/', function(req, res) {
   res.render('index');

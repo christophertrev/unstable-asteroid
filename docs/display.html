@@ -51,6 +51,13 @@
               
                 
                 <li>
+                  <a class="source" href="index.html">
+                    index.js
+                  </a>
+                </li>
+              
+                
+                <li>
                   <a class="source" href="messageController.html">
                     messageController.js
                   </a>
@@ -119,8 +126,7 @@ svg.append(<span class="hljs-string">'rect'</span>)
   <span class="hljs-keyword">var</span> nodes = flatten(treeData);
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'tree'</span>,treeData);
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'nodes'</span>,nodes);
-  <span class="hljs-keyword">var</span> links = d3.layout.tree().links(nodes);
-  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'links'</span>,links)</pre></div>
+  <span class="hljs-keyword">var</span> links = d3.layout.tree().links(nodes);</pre></div>
         
       
         
@@ -182,20 +188,18 @@ node = node.data(nodes).style(“fill”, color);</p>
 
         
           <div class='highlight'><pre>  <span class="hljs-keyword">var</span> g = node.enter().append(<span class="hljs-string">'g'</span>)
-      .attr(<span class="hljs-string">"transform"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span></span>{
-        <span class="hljs-keyword">return</span> <span class="hljs-string">"translate("</span> + d.x + <span class="hljs-string">","</span> + d.y + <span class="hljs-string">")"</span>;
-      })
+      .attr(<span class="hljs-string">"transform"</span>, transform)
       .call(force.drag);
 
   g.attr(<span class="hljs-string">"class"</span>, <span class="hljs-string">"node"</span>)
     .append(<span class="hljs-string">"circle"</span>)
-    .attr(<span class="hljs-string">"r"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> <span class="hljs-built_in">Math</span>.sqrt(d.size) / <span class="hljs-number">10</span> || <span class="hljs-number">15</span>; })
+    .attr(<span class="hljs-string">"r"</span>, radius)
     .style(<span class="hljs-string">"fill"</span>, color)
     .on(<span class="hljs-string">"click"</span>, click);
   g.append(<span class="hljs-string">"text"</span>)
     .attr(<span class="hljs-string">"class"</span>, <span class="hljs-string">"label"</span>)
-    .attr(<span class="hljs-string">"dx"</span>, <span class="hljs-number">0</span>)
-    .attr(<span class="hljs-string">"dy"</span>, <span class="hljs-string">".35em"</span>)
+    .attr(<span class="hljs-string">"dx"</span>, dx)
+    .attr(<span class="hljs-string">"dy"</span>, dy)
     .text(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span></span>{<span class="hljs-keyword">return</span> d.message});    
 
   node.attr(<span class="hljs-string">"class"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span></span>{
@@ -213,9 +217,7 @@ node = node.data(nodes).style(“fill”, color);</p>
       .attr(<span class="hljs-string">"x2"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> d.target.x; })
       .attr(<span class="hljs-string">"y2"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> d.target.y; });
 
-  node.attr(<span class="hljs-string">"transform"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span></span>{
-        <span class="hljs-keyword">return</span> <span class="hljs-string">"translate("</span> + d.x + <span class="hljs-string">","</span> + d.y + <span class="hljs-string">")"</span>;
-      });
+  node.attr(<span class="hljs-string">"transform"</span>, transform);
 
 }</pre></div>
         
@@ -232,6 +234,22 @@ node = node.data(nodes).style(“fill”, color);</p>
 
         
           <div class='highlight'><pre>  <span class="hljs-keyword">return</span> <span class="hljs-string">"#fd8d3c"</span>
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">radius</span><span class="hljs-params">(d)</span> </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">Math</span>.sqrt(d.size) / <span class="hljs-number">10</span> || <span class="hljs-number">15</span>;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">transform</span><span class="hljs-params">(d)</span> </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-string">"translate("</span> + d.x + <span class="hljs-string">","</span> + d.y + <span class="hljs-string">")"</span>;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">dx</span><span class="hljs-params">(d)</span> </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">dy</span><span class="hljs-params">(d)</span> </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-string">".35em"</span>;
 }
 
 <span class="hljs-keyword">var</span> nodeSelected;</pre></div>
