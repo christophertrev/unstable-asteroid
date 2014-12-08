@@ -51,6 +51,13 @@
               
                 
                 <li>
+                  <a class="source" href="index.html">
+                    index.js
+                  </a>
+                </li>
+              
+                
+                <li>
                   <a class="source" href="messageController.html">
                     messageController.js
                   </a>
@@ -105,46 +112,28 @@ $(<span class="hljs-built_in">document</span>).ready(<span class="hljs-function"
         
       
         
-        <p>Add bubble</p>
+        <p>Add bubble on submit</p>
 
         
-          <div class='highlight'><pre>  $(<span class="hljs-string">'.btn.send'</span>).on(<span class="hljs-string">'click'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+          <div class='highlight'><pre>  $(<span class="hljs-string">'.inputbox'</span>).on(<span class="hljs-string">'submit'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(e)</span></span>{
+    e.preventDefault();
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'hello'</span>)
-    <span class="hljs-keyword">var</span> message = $(<span class="hljs-string">'input'</span>).val();
+    <span class="hljs-keyword">var</span> message = $(<span class="hljs-string">'.messageBox'</span>).val();
+    $(<span class="hljs-string">'.messageBox'</span>).val(<span class="hljs-string">''</span>);
     <span class="hljs-keyword">var</span> messageObject = {};
     <span class="hljs-keyword">if</span>(nodeSelected){</pre></div>
         
       
         
-        <p>if(!nodeSelected.children){
-  nodeSelected.children = [];
-}</p>
+        <p>Send over message and parentID</p>
 
         
-          <div class='highlight'><pre>      messageObject = {message: message, parentID: nodeSelected};</pre></div>
-        
-      
-        
-        <p>nodeSelected.children.push({name: message, parent: nodeSelected.id});</p>
-
-        
-          <div class='highlight'><pre>    }<span class="hljs-keyword">else</span>{
-      messageObject = {message: message, parentID: <span class="hljs-string">'null'</span>};</pre></div>
-        
-      
-        
-        <p>treeData.push(messageObject);</p>
-
-        
-          <div class='highlight'><pre>    }
-    socket.sendMessage(messageObject);</pre></div>
-        
-      
-        
-        <p>update();</p>
-
-        
-          <div class='highlight'><pre>  });
+          <div class='highlight'><pre>      messageObject = {message: message, parentID: nodeSelected};
+    }<span class="hljs-keyword">else</span>{
+      messageObject = {message: message, parentID: <span class="hljs-string">'null'</span>};
+    }
+    socket.sendMessage(messageObject);
+  });
 
 });</pre></div>
         

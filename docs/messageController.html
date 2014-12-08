@@ -51,6 +51,13 @@
               
                 
                 <li>
+                  <a class="source" href="index.html">
+                    index.js
+                  </a>
+                </li>
+              
+                
+                <li>
                   <a class="source" href="messageController.html">
                     messageController.js
                   </a>
@@ -161,6 +168,14 @@
             }
           });
       });
+  },
+
+  clearDB: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res)</span> </span>{
+    Message.remove(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err)</span> </span>{
+      <span class="hljs-keyword">if</span> (!err) {
+        res.redirect(<span class="hljs-string">'/storm.html'</span>);
+      }
+    });
   },
 
   <span class="hljs-comment">/**

@@ -51,6 +51,13 @@
               
                 
                 <li>
+                  <a class="source" href="index.html">
+                    index.js
+                  </a>
+                </li>
+              
+                
+                <li>
                   <a class="source" href="messageController.html">
                     messageController.js
                   </a>
@@ -90,9 +97,19 @@ mongoose.connect(<span class="hljs-string">'mongodb://MongoLab-d:tsWFfWiQkrxfZhK
 
 app.use(express.static(__dirname + <span class="hljs-string">'/../client'</span>) );
 app.use(express.static(__dirname + <span class="hljs-string">'/../client/styles'</span>) );
+app.use(<span class="hljs-string">'/docs'</span>, express.static(__dirname + <span class="hljs-string">'/../docs'</span>)  )
 
 app.get(<span class="hljs-string">'/'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res)</span> </span>{
   res.render(<span class="hljs-string">'index'</span>);
+});</pre></div>
+        
+      
+        
+        <p>clears db</p>
+
+        
+          <div class='highlight'><pre>app.get(<span class="hljs-string">'/storm.html/clear'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res)</span> </span>{
+messageController.clearDB(req, res);
 });
 
 io.on(<span class="hljs-string">'connection'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(socket)</span> </span>{</pre></div>

@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>communication.js</title>
+  <title>index.js</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
   <link rel="stylesheet" media="all" href="docco.css" />
@@ -13,7 +13,7 @@
 
       <div class="header">
         
-          <h1>communication.js</h1>
+          <h1>index.js</h1>
         
 
         
@@ -84,44 +84,9 @@
 
       
         
-        
-        
-          <div class='highlight'><pre>
-<span class="hljs-keyword">var</span> Socket = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
-  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Attempting Connection'</span>);
-  <span class="hljs-keyword">this</span>.connection = io();
-  <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.connection);</pre></div>
-        
-      
-        
-        <p>what happens if there is not a connection available?!</p>
+        <p>Welcome to the docs</p>
+<p>Hover over curlything above for table of contents</p>
 
-        
-          <div class='highlight'><pre>};
-
-Socket.prototype.sendMessage = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(message)</span></span>{
-  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'sending message'</span>);</pre></div>
-        
-      
-        
-        <p>console.log(message);</p>
-
-        
-          <div class='highlight'><pre>  <span class="hljs-keyword">this</span>.connection.emit(<span class="hljs-string">'new message'</span>, message);
-};
-
-Socket.prototype.onAllMessages = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(callback)</span></span>{
-  <span class="hljs-keyword">this</span>.connection.on(<span class="hljs-string">'all messages'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(messageReceived)</span></span>{
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'recieved all messages'</span>);</pre></div>
-        
-      
-        
-        <p>console.log(messageReceived);</p>
-
-        
-          <div class='highlight'><pre>    callback(messageReceived);
-  });
-};</pre></div>
         
       
       <div class="fleur">h</div>
