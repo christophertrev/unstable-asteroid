@@ -88,21 +88,27 @@
         
           <div class='highlight'><pre><span class="hljs-pi">'use strict'</span>;
 
-<span class="hljs-keyword">var</span> Message = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./messageModel'</span>),
-    Q       = <span class="hljs-built_in">require</span>(<span class="hljs-string">'q'</span>);
-
-<span class="hljs-comment">/**
- * [contains helper function to add messages to tree and fetch entire tree]
- * @type {Object}
- */</span>
-<span class="hljs-built_in">module</span>.exports = {</pre></div>
+<span class="hljs-keyword">var</span> Message  = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./messageModel'</span>),
+    Q        = <span class="hljs-built_in">require</span>(<span class="hljs-string">'q'</span>),
+    mongoose = <span class="hljs-built_in">require</span>(<span class="hljs-string">'mongoose'</span>);</pre></div>
         
       
         
-        <p>returns array of all messages on db</p>
+        <p>connects global mongoose variable to online MongoDB DB</p>
 
         
-          <div class='highlight'><pre>  getFullMessageTree: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(callback)</span> </span>{
+          <div class='highlight'><pre>mongoose.connect(<span class="hljs-string">'mongodb://MongoLab-d:tsWFfWiQkrxfZhKZbNOBPVGp3culnVTNs5G7nyd1cbE-@ds050077.mongolab.com:50077/MongoLab-d'</span>);
+
+<span class="hljs-comment">/**
+ * helper functions that reference and modify messages in DB
+ */</span>
+<span class="hljs-built_in">module</span>.exports = {
+
+  <span class="hljs-comment">/**
+   * return array of constructed trees
+   * @params [Function] callback to be called after successful retrieval
+   */</span>
+  getFullMessageTree: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(callback)</span> </span>{
     <span class="hljs-keyword">var</span> getMessageTree = Q.nbind(Message.find, Message);
 
     getMessageTree({})
@@ -112,15 +118,14 @@
       .fail(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(error)</span> </span>{
         <span class="hljs-built_in">console</span>.log(error);
       });
-  },</pre></div>
-        
-      
-        
-        <p>adds message to db
-@params [Object (message, parentID)]</p>
+  },
 
-        
-          <div class='highlight'><pre>  addNewMessage: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(messageObject, callback)</span> </span>{
+  <span class="hljs-comment">/**
+   * constructs mongoose model and adds message to DB
+   * @param {Object} messageObject provided by client
+   * @param {Function} callback to be called if successful addition
+   */</span>
+  addNewMessage: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(messageObject, callback)</span> </span>{
     <span class="hljs-keyword">if</span> (messageObject.parentID === <span class="hljs-string">'null'</span>) {
       messageObject.parentID = <span class="hljs-literal">null</span>;
     }
@@ -140,7 +145,7 @@
         
       
         
-        <p>creates and saves message to db</p>
+        <p>creates and saves message to DB</p>
 
         
           <div class='highlight'><pre>    createMessage(newMessage)
@@ -150,7 +155,7 @@
         
       
         
-        <p>finds parent of the created message. pushes messageID into childrenID array of parent and saves back to db</p>
+        <p>finds parent of the created message. pushes messageID into childrenID array of parent and saves back to DB</p>
 
         
           <div class='highlight'><pre>      .then(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(createdMessage)</span> </span>{
@@ -170,6 +175,7 @@
       });
   },
 
+  <span class="hljs-comment">/** middleware function that clears database and redirects to home page */</span>
   clearDB: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res)</span> </span>{
     Message.remove(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err)</span> </span>{
       <span class="hljs-keyword">if</span> (!err) {
@@ -179,9 +185,66 @@
   },
 
   <span class="hljs-comment">/**
+   * edits single message in DB
+   * @param  {Object} message object provided by client
+   * @param  {Function} callback to be called after reference to DB
+   */</span>
+  editMessage: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(messageObject, callback)</span> </span>{
+    Message.update({ _id: messageObject._id}, { message: messageObject.message }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, updatedMessage)</span> </span>{
+      <span class="hljs-keyword">if</span> (!err) {
+        callback();
+      }
+    });
+  },
+
+  <span class="hljs-comment">/**
+   * remove message from DB
+   * @params [Object] message object provided by client
+   * @params [Function] callback to be called if successful removal
+   */</span>
+  removeMessage: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(messageObject, callback)</span> </span>{
+    Message.remove({ _id: messageObject._id }, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err)</span> </span>{</pre></div>
+        
+      
+        
+        <p>if messageObject has parent then update parent</p>
+
+        
+          <div class='highlight'><pre>      <span class="hljs-keyword">if</span> (!err &amp;&amp; messageObject.parentID) {
+        <span class="hljs-built_in">module</span>.exports(messageObject, callback);
+      } <span class="hljs-keyword">else</span> {
+        callback();
+      }
+    });
+
+  },
+
+  <span class="hljs-comment">/**
+   * searches DB for parent of removed element and removes ID from childrenID array
+   * @params {Object} child object
+   * @params {Function} callback to be called after execution
+   */</span>
+  removeChildReferenceFromParent: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(messageObject, callback)</span> </span>{
+   Message.findOne({_id: messageObject.parentID}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, foundParent)</span> </span>{
+     <span class="hljs-keyword">var</span> childrenID = foundParent.childrenID;
+     <span class="hljs-keyword">var</span> updatedChildrenID = [];
+
+     childrenID.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ID)</span> </span>{
+       <span class="hljs-keyword">if</span> (<span class="hljs-built_in">String</span>(ID) !== <span class="hljs-built_in">String</span>(messageObject._id)) {
+         updatedChildrenID.push(ID);
+       }
+     });
+
+     Message.update({_id: messageObject.parentID}, {childrenID: updatedChildrenID}, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, data)</span> </span>{
+       callback();
+     });
+   });
+  },
+
+  <span class="hljs-comment">/**
    * creates array of messages + direct children
-   * @param { Array }
-   * @returns
+   * @param {[mongoose model]}
+   * @returns {[Object]}
    */</span>
   constructRootsArray: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(arrayOfMessages)</span> </span>{
     <span class="hljs-keyword">var</span> messages = [],
@@ -214,6 +277,11 @@
     <span class="hljs-keyword">return</span> roots;
   },
 
+  <span class="hljs-comment">/**
+   * converts mongoose model to object
+   * @params {mongoose model}
+   * @return {Object}
+   */</span>
   cloneMessage: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(messageModel)</span> </span>{
     <span class="hljs-keyword">return</span> {
       message: messageModel.message,
@@ -221,14 +289,14 @@
       childrenID: messageModel.childrenID,
       parentID: messageModel.parentID,
     }
-  },</pre></div>
-        
-      
-        
-        <p>constructs entire tree</p>
+  },
 
-        
-          <div class='highlight'><pre>  constructTree: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(root, arrayOfMessages)</span> </span>{
+  <span class="hljs-comment">/**
+   * constructs tree provided root and array of all messages
+   * @params {Object} mongoose object
+   * @params {[mongoose models]} array of all messages fetched by DB
+   */</span>
+  constructTree: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(root, arrayOfMessages)</span> </span>{
     <span class="hljs-keyword">var</span> root = <span class="hljs-built_in">module</span>.exports.cloneMessage(root);
     root.children = [];
     <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; root.childrenID.length; i++) {
@@ -238,6 +306,12 @@
     <span class="hljs-keyword">return</span> root;
   },
 
+  <span class="hljs-comment">/**
+   * searches array of messags and searches for ID
+   * @params {mongoose objectID}
+   * @params  {[mongoose models]}
+   * @return {[mongoose models]}
+   */</span>
   findMessageByID: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ID, arrayOfMessages)</span> </span>{
     <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; arrayOfMessages.length; i++) {
       <span class="hljs-keyword">if</span> (<span class="hljs-built_in">String</span>(arrayOfMessages[i]._id) === <span class="hljs-built_in">String</span>(ID)) {

@@ -84,17 +84,33 @@
 
       
         
-        <p>Tree is empty object</p>
-
+        
         
           <div class='highlight'><pre>treeData = [];
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setTreeData</span><span class="hljs-params">(data)</span></span>{
-  treeData = data ? data : treeData;
+<span class="hljs-keyword">var</span> setTreeData = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(data)</span></span>{</pre></div>
+        
+      
+        
+        <p>If data is present set equal to treedata 
+then update page</p>
+
+        
+          <div class='highlight'><pre>  treeData = data ? data : treeData;
   update();
 };
 
-$(<span class="hljs-built_in">document</span>).ready(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{</pre></div>
+<span class="hljs-keyword">var</span> allowRemoval = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(data)</span></span>{
+  $(<span class="hljs-string">'.btn.remove'</span>).show();
+}
+
+<span class="hljs-keyword">var</span> disallowRemoval = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(data)</span></span>{
+  $(<span class="hljs-string">'.btn.remove'</span>).hide();
+}
+
+$(<span class="hljs-built_in">document</span>).ready(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+
+  $(<span class="hljs-string">'.btn.remove'</span>).hide();</pre></div>
         
       
         
@@ -117,7 +133,6 @@ $(<span class="hljs-built_in">document</span>).ready(<span class="hljs-function"
         
           <div class='highlight'><pre>  $(<span class="hljs-string">'.inputbox'</span>).on(<span class="hljs-string">'submit'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(e)</span></span>{
     e.preventDefault();
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'hello'</span>)
     <span class="hljs-keyword">var</span> message = $(<span class="hljs-string">'.messageBox'</span>).val();
     $(<span class="hljs-string">'.messageBox'</span>).val(<span class="hljs-string">''</span>);
     <span class="hljs-keyword">var</span> messageObject = {};
@@ -128,11 +143,52 @@ $(<span class="hljs-built_in">document</span>).ready(<span class="hljs-function"
         <p>Send over message and parentID</p>
 
         
-          <div class='highlight'><pre>      messageObject = {message: message, parentID: nodeSelected};
+          <div class='highlight'><pre>      messageObject = {message: message, parentID: nodeSelected._id};
     }<span class="hljs-keyword">else</span>{
       messageObject = {message: message, parentID: <span class="hljs-string">'null'</span>};
     }
     socket.sendMessage(messageObject);
+  });
+
+  $(<span class="hljs-string">'.btn.edit'</span>).on(<span class="hljs-string">'click'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(e)</span></span>{</pre></div>
+        
+      
+        
+        <p>Emit message to db</p>
+
+        
+          <div class='highlight'><pre>    <span class="hljs-keyword">var</span> message = $(<span class="hljs-string">'.messageBox'</span>).val();
+    $(<span class="hljs-string">'.messageBox'</span>).val(<span class="hljs-string">''</span>);
+    <span class="hljs-keyword">var</span> messageObject = {};
+    <span class="hljs-keyword">if</span>(nodeSelected){</pre></div>
+        
+      
+        
+        <p>Send over message and parentID</p>
+
+        
+          <div class='highlight'><pre>      messageObject = {message: message, _id: nodeSelected._id};
+      socket.sendEdit(messageObject);
+    }
+  });
+
+  $(<span class="hljs-string">'.btn.remove'</span>).on(<span class="hljs-string">'click'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(e)</span></span>{</pre></div>
+        
+      
+        
+        <p>Emit message to db</p>
+
+        
+          <div class='highlight'><pre>    <span class="hljs-keyword">var</span> messageObject = {};</pre></div>
+        
+      
+        
+        <p>Send over id and and parentID</p>
+
+        
+          <div class='highlight'><pre>      messageObject = {_id: nodeSelected._id, parentID: nodeSelected.parentID};
+      socket.sendDelete(messageObject);
+    $(<span class="hljs-keyword">this</span>).hide();
   });
 
 });</pre></div>

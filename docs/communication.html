@@ -84,42 +84,49 @@
 
       
         
+        <p>Socket class for sending/recieving messages from socket
+Creates connection on object creation </p>
+
         
-        
-          <div class='highlight'><pre>
-<span class="hljs-keyword">var</span> Socket = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
-  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Attempting Connection'</span>);
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> Socket = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
   <span class="hljs-keyword">this</span>.connection = io();
-  <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.connection);</pre></div>
+};</pre></div>
         
       
         
-        <p>what happens if there is not a connection available?!</p>
+        <p>Sends message with new message event</p>
 
         
-          <div class='highlight'><pre>};
-
-Socket.prototype.sendMessage = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(message)</span></span>{
-  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'sending message'</span>);</pre></div>
+          <div class='highlight'><pre>Socket.prototype.sendMessage = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(message)</span></span>{
+  <span class="hljs-keyword">this</span>.connection.emit(<span class="hljs-string">'new message'</span>, message);
+};</pre></div>
         
       
         
-        <p>console.log(message);</p>
+        <p>Sends message with edit event</p>
 
         
-          <div class='highlight'><pre>  <span class="hljs-keyword">this</span>.connection.emit(<span class="hljs-string">'new message'</span>, message);
-};
+          <div class='highlight'><pre>Socket.prototype.sendEdit = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(message)</span></span>{
+  <span class="hljs-keyword">this</span>.connection.emit(<span class="hljs-string">'edit message'</span>, message);
+};</pre></div>
+        
+      
+        
+        <p>Sends message with delete event</p>
 
-Socket.prototype.onAllMessages = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(callback)</span></span>{
+        
+          <div class='highlight'><pre>Socket.prototype.sendDelete = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(message)</span></span>{
+  <span class="hljs-keyword">this</span>.connection.emit(<span class="hljs-string">'remove message leaf'</span>, message);
+};</pre></div>
+        
+      
+        
+        <p>Sets callback for when ‘all messages’ event is recieved</p>
+
+        
+          <div class='highlight'><pre>Socket.prototype.onAllMessages = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(callback)</span></span>{
   <span class="hljs-keyword">this</span>.connection.on(<span class="hljs-string">'all messages'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(messageReceived)</span></span>{
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'recieved all messages'</span>);</pre></div>
-        
-      
-        
-        <p>console.log(messageReceived);</p>
-
-        
-          <div class='highlight'><pre>    callback(messageReceived);
+    callback(messageReceived);
   });
 };</pre></div>
         

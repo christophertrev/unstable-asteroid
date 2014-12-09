@@ -84,57 +84,103 @@
 
       
         
-        
+        <p>get the dependencies</p>
+
         
           <div class='highlight'><pre><span class="hljs-keyword">var</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>);
 <span class="hljs-keyword">var</span> app = express();
 <span class="hljs-keyword">var</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>).Server(app);
 <span class="hljs-keyword">var</span> io = <span class="hljs-built_in">require</span>(<span class="hljs-string">'socket.io'</span>)(http);
-<span class="hljs-keyword">var</span> mongoose = <span class="hljs-built_in">require</span>(<span class="hljs-string">'mongoose'</span>);
-<span class="hljs-keyword">var</span> messageController = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./messages/messageController'</span>);
+<span class="hljs-keyword">var</span> messageController = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./messages/messageController'</span>);</pre></div>
+        
+      
+        
+        <p>serve static files</p>
 
-mongoose.connect(<span class="hljs-string">'mongodb://MongoLab-d:tsWFfWiQkrxfZhKZbNOBPVGp3culnVTNs5G7nyd1cbE-@ds050077.mongolab.com:50077/MongoLab-d'</span>);
-
-app.use(express.static(__dirname + <span class="hljs-string">'/../client'</span>) );
+        
+          <div class='highlight'><pre>app.use(express.static(__dirname + <span class="hljs-string">'/../client'</span>) );
 app.use(express.static(__dirname + <span class="hljs-string">'/../client/styles'</span>) );
-app.use(<span class="hljs-string">'/docs'</span>, express.static(__dirname + <span class="hljs-string">'/../docs'</span>)  )
+app.use(<span class="hljs-string">'/docs'</span>, express.static(__dirname + <span class="hljs-string">'/../docs'</span>)  )</pre></div>
+        
+      
+        
+        <p>redirect blank url to index.html</p>
 
-app.get(<span class="hljs-string">'/'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res)</span> </span>{
+        
+          <div class='highlight'><pre>app.get(<span class="hljs-string">'/'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res)</span> </span>{
   res.render(<span class="hljs-string">'index'</span>);
 });</pre></div>
         
       
         
-        <p>clears db</p>
+        <p>clear database when ‘/storm.html/clear’ is visited</p>
 
         
           <div class='highlight'><pre>app.get(<span class="hljs-string">'/storm.html/clear'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res)</span> </span>{
-messageController.clearDB(req, res);
-});
-
-io.on(<span class="hljs-string">'connection'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(socket)</span> </span>{</pre></div>
+  messageController.clearDB(req, res);
+});</pre></div>
         
       
         
-        <p>send all current messages to the newly connected user</p>
+        <p>open a socket between the client and server</p>
 
         
-          <div class='highlight'><pre>  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Connected with user'</span>);
-  messageController.getFullMessageTree(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(messages)</span> </span>{
-    socket.emit(<span class="hljs-string">'all messages'</span>, messages);
-  });
+          <div class='highlight'><pre>io.on(<span class="hljs-string">'connection'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(socket)</span> </span>{
+  <span class="hljs-keyword">var</span> sendFullMessageTree = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+    messageController.getFullMessageTree(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(messages)</span> </span>{
+      io.emit(<span class="hljs-string">'all messages'</span>, messages);
+    });
+  };</pre></div>
+        
+      
+        
+        <p>send all current messages to only the newly connected user</p>
 
-  socket.on(<span class="hljs-string">'new message'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(msg)</span> </span>{
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'in new message, message is: '</span>, msg);
+        
+          <div class='highlight'><pre>  messageController.getFullMessageTree(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(messages)</span> </span>{
+    socket.emit(<span class="hljs-string">'all messages'</span>, messages);
+  });</pre></div>
+        
+      
+        
+        <p>send all current messages to all users when a new message has been added</p>
+
+        
+          <div class='highlight'><pre>  socket.on(<span class="hljs-string">'new message'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(msg)</span> </span>{
     messageController.addNewMessage(msg, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
-      messageController.getFullMessageTree(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(messages)</span> </span>{
-         io.emit(<span class="hljs-string">'all messages'</span>, messages);
-      });
+      sendFullMessageTree();
+    });
+  });</pre></div>
+        
+      
+        
+        <p>send all current messages to all users after a message has been edited</p>
+
+        
+          <div class='highlight'><pre>  socket.on(<span class="hljs-string">'edit message'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(msg)</span></span>{
+    messageController.editMessage(msg,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+      sendFullMessageTree();
+    })
+  });</pre></div>
+        
+      
+        
+        <p>send all current messages to all users after a message has been removed</p>
+
+        
+          <div class='highlight'><pre>  socket.on(<span class="hljs-string">'remove message leaf'</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(msg)</span></span>{
+    messageController.removeMessage(msg,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+      sendFullMessageTree();
     });
   });
-});
+});</pre></div>
+        
+      
+        
+        <p>start listening</p>
 
-<span class="hljs-keyword">var</span> port = process.env.PORT || <span class="hljs-number">8000</span>;
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> port = process.env.PORT || <span class="hljs-number">8000</span>;
 http.listen(port);</pre></div>
         
       

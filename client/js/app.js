@@ -1,17 +1,17 @@
 treeData = [];
 
-function setTreeData(data){
+var setTreeData = function(data){
   //If data is present set equal to treedata 
   // then update page
   treeData = data ? data : treeData;
   update();
 };
 
-function allowRemoval(data){
+var allowRemoval = function(data){
   $('.btn.remove').show();
 }
 
-function disallowRemoval(data){
+var disallowRemoval = function(data){
   $('.btn.remove').hide();
 }
 

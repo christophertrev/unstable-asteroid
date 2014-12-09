@@ -97,35 +97,50 @@
 
 <span class="hljs-keyword">var</span> zoom = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
   svg.attr(<span class="hljs-string">"transform"</span>, <span class="hljs-string">"translate("</span> + d3.event.translate + <span class="hljs-string">")scale("</span> + d3.event.scale + <span class="hljs-string">")"</span>);
-};
-
-<span class="hljs-keyword">var</span> svg = d3.select(<span class="hljs-string">".d3box"</span>).append(<span class="hljs-string">"svg"</span>)</pre></div>
+};</pre></div>
         
       
         
-        <p>.attr(“width”, width)
-.attr(“height”, height)</p>
+        <p>Overall container for D3 graph</p>
 
         
-          <div class='highlight'><pre>    .attr(<span class="hljs-string">"class"</span>,<span class="hljs-string">'graph'</span>)
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> svg = d3.select(<span class="hljs-string">".d3box"</span>).append(<span class="hljs-string">"svg"</span>)
+    .attr(<span class="hljs-string">"class"</span>,<span class="hljs-string">'graph'</span>)
     .append(<span class="hljs-string">'g'</span>)
-      .call(d3.behavior.zoom().scaleExtent([<span class="hljs-number">0.7</span> , <span class="hljs-number">8</span>]).center([<span class="hljs-number">480</span>, <span class="hljs-number">250</span>]).on(<span class="hljs-string">'zoom'</span>, zoom))
+    .call(d3.behavior.zoom().scaleExtent([<span class="hljs-number">0.7</span> , <span class="hljs-number">8</span>]).center([<span class="hljs-number">480</span>, <span class="hljs-number">250</span>]).on(<span class="hljs-string">'zoom'</span>, zoom))
     .append(<span class="hljs-string">'g'</span>);
 
 svg.append(<span class="hljs-string">'rect'</span>)
-  .attr(<span class="hljs-string">'width'</span>, <span class="hljs-number">1000</span>)
-  .attr(<span class="hljs-string">'height'</span>, <span class="hljs-number">1000</span>)
-  .attr(<span class="hljs-string">'x'</span>, <span class="hljs-number">0</span>)
-  .attr(<span class="hljs-string">'y'</span>, <span class="hljs-number">0</span>)
+  .attr(<span class="hljs-string">'width'</span>, <span class="hljs-number">10000</span>)
+  .attr(<span class="hljs-string">'height'</span>, <span class="hljs-number">10000</span>)
+  .attr(<span class="hljs-string">'x'</span>, -<span class="hljs-number">5000</span>)
+  .attr(<span class="hljs-string">'y'</span>, -<span class="hljs-number">5000</span>)
   .attr(<span class="hljs-string">'class'</span>, <span class="hljs-string">'overlay'</span>);
 
 <span class="hljs-keyword">var</span> link = svg.selectAll(<span class="hljs-string">".link"</span>),
     node = svg.selectAll(<span class="hljs-string">".node"</span>);
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">update</span><span class="hljs-params">()</span> </span>{
-  <span class="hljs-keyword">var</span> nodes = flatten(treeData);
-  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'tree'</span>,treeData);
-  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'nodes'</span>,nodes);
+  <span class="hljs-keyword">var</span> oldNodes = force.nodes();
+  <span class="hljs-keyword">var</span> newNodes = flatten(treeData);</pre></div>
+        
+      
+        
+        <p>copy over position properties from old nodes</p>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; oldNodes.length; ++i) {
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span>; j &lt; newNodes.length; ++j) {
+      <span class="hljs-keyword">if</span> (oldNodes[i].id === newNodes[j].id) {
+        newNodes[j].x = oldNodes[i].x;
+        newNodes[j].y = oldNodes[i].y;
+        <span class="hljs-keyword">break</span>;
+      }
+    }
+  }
+
+  <span class="hljs-keyword">var</span> nodes = newNodes;
+
   <span class="hljs-keyword">var</span> links = d3.layout.tree().links(nodes);</pre></div>
         
       
@@ -136,8 +151,8 @@ svg.append(<span class="hljs-string">'rect'</span>)
           <div class='highlight'><pre>  force
       .nodes(nodes)
       .links(links)
-      .charge(-<span class="hljs-number">500</span>)
-      .linkDistance(<span class="hljs-number">100</span>)
+      .charge(-<span class="hljs-number">1000</span>)
+      .linkDistance(<span class="hljs-number">75</span>)
       .start();</pre></div>
         
       
@@ -168,83 +183,144 @@ svg.append(<span class="hljs-string">'rect'</span>)
         
       
         
-        <p>Update the nodes…
-node = node.data(nodes).style(“fill”, color);</p>
+        <p>Update the nodes, keying off of the id</p>
 
         
-          <div class='highlight'><pre>
-  node = node.data(nodes, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> d.id; });</pre></div>
+          <div class='highlight'><pre>  node = node.data(nodes, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> [d.id,d.message]; });</pre></div>
         
       
         
-        <p>Exit any old nodes.</p>
+        <p>Necessary so both the svg g element and the circles have access to the data
+Removing this breaks the updating of the coloring with increasing children</p>
+
+        
+          <div class='highlight'><pre>  node.selectAll(<span class="hljs-string">"circle"</span>).data(nodes, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> d.id; });</pre></div>
+        
+      
+        
+        <p>Exit any old nodes</p>
 
         
           <div class='highlight'><pre>  node.exit().remove();</pre></div>
         
       
         
-        <p>Enter any new nodes.</p>
+        <p>Enter any new nodes, by creating a svg g element, will contain circle and text</p>
 
         
           <div class='highlight'><pre>  <span class="hljs-keyword">var</span> g = node.enter().append(<span class="hljs-string">'g'</span>)
-      .attr(<span class="hljs-string">"transform"</span>, transform)
-      .call(force.drag);
+      .attr(<span class="hljs-string">"transform"</span>, transform)</pre></div>
+        
+      
+        
+        <p>Register click event on overall element so text or circle can be clicked to select node</p>
 
-  g.attr(<span class="hljs-string">"class"</span>, <span class="hljs-string">"node"</span>)
+        
+          <div class='highlight'><pre>      .on(<span class="hljs-string">"click"</span>, click)</pre></div>
+        
+      
+        
+        <p>Add circle inside g element </p>
+
+        
+          <div class='highlight'><pre>  g.attr(<span class="hljs-string">"class"</span>, <span class="hljs-string">"node"</span>)
     .append(<span class="hljs-string">"circle"</span>)
-    .attr(<span class="hljs-string">"r"</span>, radius)
-    .style(<span class="hljs-string">"fill"</span>, color)
-    .on(<span class="hljs-string">"click"</span>, click);
-  g.append(<span class="hljs-string">"text"</span>)
+    .attr(<span class="hljs-string">"r"</span>, radius);</pre></div>
+        
+      
+        
+        <p>Update ALL circle color on update because color changes with number of children
+Can remove if color no longer depends on dynamic property like number of children</p>
+
+        
+          <div class='highlight'><pre>  node.selectAll(<span class="hljs-string">"circle"</span>).style(<span class="hljs-string">"fill"</span>, color);</pre></div>
+        
+      
+        
+        <p>Add text (on top of circle) inside g element</p>
+
+        
+          <div class='highlight'><pre>  g.append(<span class="hljs-string">"text"</span>)
     .attr(<span class="hljs-string">"class"</span>, <span class="hljs-string">"label"</span>)
     .attr(<span class="hljs-string">"dx"</span>, dx)
     .attr(<span class="hljs-string">"dy"</span>, dy)
-    .text(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span></span>{<span class="hljs-keyword">return</span> d.message});    
+    .attr(<span class="hljs-string">"text-anchor"</span>, textAnchor)
+    .text(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span></span>{<span class="hljs-keyword">return</span> d.message});</pre></div>
+        
+      
+        
+        <p>Add ‘selected’ class to one node only 
+This could probably be moved to the node.selectAll(“circle”) instead</p>
 
-  node.attr(<span class="hljs-string">"class"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span></span>{
-    <span class="hljs-keyword">if</span>(d._id === nodeSelected) {
-      <span class="hljs-keyword">return</span> <span class="hljs-string">"node selected"</span>;
-    }<span class="hljs-keyword">else</span>{
-      <span class="hljs-keyword">return</span> <span class="hljs-string">"node"</span>;
+        
+          <div class='highlight'><pre>  node.attr(<span class="hljs-string">"class"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span></span>{
+    <span class="hljs-keyword">if</span>(nodeSelected !== <span class="hljs-literal">null</span>){
+      <span class="hljs-keyword">if</span>(d._id === nodeSelected._id) {
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"node selected"</span>;
+      }<span class="hljs-keyword">else</span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"node"</span>;
+      }
     }
   });
-}
+}</pre></div>
+        
+      
+        
+        <p>Updates the link and nodes positions as nodes move</p>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">tick</span><span class="hljs-params">()</span> </span>{
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">tick</span><span class="hljs-params">()</span> </span>{
   link.attr(<span class="hljs-string">"x1"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> d.source.x; })
       .attr(<span class="hljs-string">"y1"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> d.source.y; })
       .attr(<span class="hljs-string">"x2"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> d.target.x; })
       .attr(<span class="hljs-string">"y2"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(d)</span> </span>{ <span class="hljs-keyword">return</span> d.target.y; });
 
   node.attr(<span class="hljs-string">"transform"</span>, transform);
-
 }</pre></div>
         
       
         
-        <p>Color leaf nodes orange, and packages white or blue.</p>
+        <p>Color depends on number of children, up to 10 children
+More children, more red</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">color</span><span class="hljs-params">(d)</span> </span>{</pre></div>
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">color</span><span class="hljs-params">(d)</span> </span>{
+  <span class="hljs-keyword">var</span> maxChildren = <span class="hljs-number">10</span>;
+  <span class="hljs-keyword">var</span> maxChildrenColor = <span class="hljs-string">"#ff3300"</span>; <span class="hljs-comment">//redish orange</span>
+  <span class="hljs-keyword">var</span> noChildrenColor = <span class="hljs-string">"#FBB03B"</span>; <span class="hljs-comment">//yellowish orange</span>
+  <span class="hljs-keyword">var</span> interpolateColor  = d3.scale.linear().domain([<span class="hljs-number">0</span>,maxChildren]).range([noChildrenColor,maxChildrenColor]);
+  <span class="hljs-keyword">return</span> interpolateColor(<span class="hljs-built_in">Math</span>.min(maxChildren, d.children.length));
+}</pre></div>
         
       
         
-        <p>return d._children ? “#3182bd” : d.children ? “#c6dbef” : “#fd8d3c”;</p>
+        <p>Size of cirlce depends how far away from original root, unless more than 5 away from root
+Root is largest, getting smaller as further from root</p>
 
         
-          <div class='highlight'><pre>  <span class="hljs-keyword">return</span> <span class="hljs-string">"#fd8d3c"</span>
-}
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">radius</span><span class="hljs-params">(d)</span> </span>{
+  <span class="hljs-keyword">var</span> maxDepth = <span class="hljs-number">5</span>;
+  <span class="hljs-keyword">var</span> maxSize = <span class="hljs-number">40</span>;
+  <span class="hljs-keyword">var</span> minSize = <span class="hljs-number">20</span>;
+  <span class="hljs-keyword">var</span> interpolateSize = d3.scale.linear().domain([<span class="hljs-number">0</span>,maxDepth]).range([maxSize, minSize]);
+  <span class="hljs-keyword">return</span> interpolateSize(<span class="hljs-built_in">Math</span>.min(maxDepth, d.depth));
+}</pre></div>
+        
+      
+        
+        <p>Sets position of g element relative to containing box</p>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">radius</span><span class="hljs-params">(d)</span> </span>{
-  <span class="hljs-keyword">return</span> <span class="hljs-built_in">Math</span>.sqrt(d.size) / <span class="hljs-number">10</span> || <span class="hljs-number">15</span>;
-}
-
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">transform</span><span class="hljs-params">(d)</span> </span>{
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">transform</span><span class="hljs-params">(d)</span> </span>{
   <span class="hljs-keyword">return</span> <span class="hljs-string">"translate("</span> + d.x + <span class="hljs-string">","</span> + d.y + <span class="hljs-string">")"</span>;
-}
+}</pre></div>
+        
+      
+        
+        <p>Text properties for svg text</p>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">dx</span><span class="hljs-params">(d)</span> </span>{
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">dx</span><span class="hljs-params">(d)</span> </span>{
   <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
 }
 
@@ -252,46 +328,64 @@ node = node.data(nodes).style(“fill”, color);</p>
   <span class="hljs-keyword">return</span> <span class="hljs-string">".35em"</span>;
 }
 
-<span class="hljs-keyword">var</span> nodeSelected;</pre></div>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">textAnchor</span><span class="hljs-params">(d)</span></span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-string">"middle"</span>;
+}</pre></div>
+        
+      
+        
+        <p>This is not used, but scales text size according to length of message</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fontSize</span><span class="hljs-params">(d)</span></span>{
+  <span class="hljs-keyword">var</span> minFontSize = <span class="hljs-number">6</span>;
+  <span class="hljs-keyword">var</span> maxFontSize = <span class="hljs-number">30</span>;
+  <span class="hljs-keyword">var</span> maxCharLength = <span class="hljs-number">20</span>;
+  <span class="hljs-keyword">var</span> minCharLength = <span class="hljs-number">1</span>;
+  <span class="hljs-keyword">var</span> textLength = d.message.length;
+  <span class="hljs-keyword">var</span> interpolateSize = d3.scale.linear().domain([maxCharLength,minCharLength]).range([minFontSize,maxFontSize]);
+  <span class="hljs-keyword">return</span> interpolateSize(textLength);
+}</pre></div>
+        
+      
+        
+        <p>Holds node that is currently selected on screen </p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> nodeSelected = <span class="hljs-literal">null</span>;</pre></div>
         
       
         
         <p>Toggle children on click.</p>
 
         
-          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">click</span><span class="hljs-params">(d)</span> </span>{</pre></div>
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">click</span><span class="hljs-params">(d)</span> </span>{
+  <span class="hljs-keyword">if</span> (!d3.event.defaultPrevented) {</pre></div>
         
       
         
-        <p>d.attr(“class”, “selected”);
-console.log(force.nodes());
-console.log(‘obj’,d)</p>
+        <p>If node clicked is already selected, deselect, otherwise node selected is node clicked</p>
 
         
-          <div class='highlight'><pre>  nodeSelected = nodeSelected === d._id ? <span class="hljs-literal">null</span> : d._id;
-  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'SELECTED NODE'</span>,nodeSelected)
-  update();</pre></div>
+          <div class='highlight'><pre>    nodeSelected = nodeSelected === d ? <span class="hljs-literal">null</span> : d;</pre></div>
         
       
         
-        <p>d.selected = !d.selected;
-if (!d3.event.defaultPrevented) {
-  if (d.children) {
-    d._children = d.children;
-    d.children = null;
-  } else {
-    d.children = d._children;
-    d._children = null;
+        <p>If not just deselected, if the node has children it cannot be deleted</p>
+
+        
+          <div class='highlight'><pre>    <span class="hljs-keyword">if</span>(nodeSelected !== <span class="hljs-literal">null</span> &amp;&amp; nodeSelected.children.length === <span class="hljs-number">0</span>){
+        allowRemoval();
+    }<span class="hljs-keyword">else</span>{
+      disallowRemoval();
+    }
+    update();
   }
-  update();
-}</p>
-
-        
-          <div class='highlight'><pre>}</pre></div>
+}</pre></div>
         
       
         
-        <p>Returns a list of all nodes under the root.</p>
+        <p>Returns a flattened list of all nodes </p>
 
         
           <div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">flatten</span><span class="hljs-params">(roots)</span> </span>{
@@ -301,18 +395,19 @@ if (!d3.event.defaultPrevented) {
     recurse(root);
   });
 
-  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">recurse</span><span class="hljs-params">(node)</span> </span>{
-    <span class="hljs-keyword">if</span> (node.children) node.children.forEach(recurse);
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">recurse</span><span class="hljs-params">(node, depth)</span> </span>{
+    depth = depth || <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">if</span> (node.children){
+      <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; node.children.length; i++){
+        recurse(node.children[i], depth+<span class="hljs-number">1</span>);
+      }
+    } 
+
+    node.depth = depth;
     node.id = node._id;
     nodes.push(node);
-  }</pre></div>
-        
-      
-        
-        <p>console.log(nodes)</p>
-
-        
-          <div class='highlight'><pre>  <span class="hljs-keyword">return</span> nodes;
+  }
+  <span class="hljs-keyword">return</span> nodes;
 }</pre></div>
         
       

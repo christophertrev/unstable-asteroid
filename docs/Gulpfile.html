@@ -84,11 +84,9 @@
 
       
         
-        <p>npm ‘use strict’;</p>
-
         
-          <div class='highlight'><pre>
-<span class="hljs-keyword">var</span> gulp      = <span class="hljs-built_in">require</span>(<span class="hljs-string">'gulp'</span>),
+        
+          <div class='highlight'><pre><span class="hljs-keyword">var</span> gulp      = <span class="hljs-built_in">require</span>(<span class="hljs-string">'gulp'</span>),
     nodemon   = <span class="hljs-built_in">require</span>(<span class="hljs-string">'gulp-nodemon'</span>),
     bs        = <span class="hljs-built_in">require</span>(<span class="hljs-string">'browser-sync'</span>),
     reload    = bs.reload,
@@ -109,50 +107,28 @@
         
           <div class='highlight'><pre>  scripts: [<span class="hljs-string">'client/**/*.js'</span>],
   html: [<span class="hljs-string">'client/**/*.html'</span>, <span class="hljs-string">'client/index.html'</span>],
-  styles: [<span class="hljs-string">'client/styles/styles.css'</span>],
+  styles: [<span class="hljs-string">'client/styles/**.css'</span>],
   test: [<span class="hljs-string">'specs/**/*.js'</span>]
 };</pre></div>
         
       
         
-        <p>any changes made to your
-client side code will automagically refresh your page
+        <p>any changes made to to the client side
+will automagically refresh your page
 with the new changes</p>
 
         
           <div class='highlight'><pre>gulp.task(<span class="hljs-string">'start'</span>, [<span class="hljs-string">'serve'</span>]
   ,<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
   bs({
-    notify: <span class="hljs-literal">true</span>,</pre></div>
-        
-      
-        
-        <p>address for server,</p>
-
-        
-          <div class='highlight'><pre>    injectChanges: <span class="hljs-literal">true</span>,
+    notify: <span class="hljs-literal">true</span>,
+    injectChanges: <span class="hljs-literal">true</span>,
     files: paths.scripts.concat(paths.html, paths.styles),
-    proxy: <span class="hljs-string">'localhost:8000'</span></pre></div>
-        
-      
-        
-        <p>server: {
-  baseDir:’client’,
-  index: ‘index.html’
-}</p>
+    proxy: <span class="hljs-string">'localhost:8000'</span>
+  });
+});
 
-        
-          <div class='highlight'><pre>  });
-});</pre></div>
-        
-      
-        
-        <p>gulp.task(‘karma’, shell.task([
-  ‘karma start’
-]));</p>
-
-        
-          <div class='highlight'><pre>gulp.task(<span class="hljs-string">'docs'</span>, shell.task([
+gulp.task(<span class="hljs-string">'docs'</span>, shell.task([
    <span class="hljs-string">'docco client/js/*.js server/*.js server/messages/*.js Gulpfile.js -l linear'</span>
  ]));</pre></div>
         
