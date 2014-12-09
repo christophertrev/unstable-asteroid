@@ -3,11 +3,7 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var mongoose = require('mongoose');
 var messageController = require('./messages/messageController');
-
-//connect to DB
-mongoose.connect('mongodb://MongoLab-d:tsWFfWiQkrxfZhKZbNOBPVGp3culnVTNs5G7nyd1cbE-@ds050077.mongolab.com:50077/MongoLab-d');
 
 //serve static files
 app.use(express.static(__dirname + '/../client') );
