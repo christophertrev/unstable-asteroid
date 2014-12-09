@@ -21,9 +21,13 @@ Socket.prototype.onAllMessages = function(callback){
   });
 };
 
-
 Socket.prototype.sendEdit = function(message){
   console.log('sending Edits for',message);
   this.connection.emit('edit message', message);
+};
+
+Socket.prototype.sendDelete = function(message){
+  console.log('Sending delete for ',message);
+  this.connection.emit('remove message leaf', message);
 };
 

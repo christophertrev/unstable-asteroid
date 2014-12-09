@@ -45,7 +45,20 @@ io.on('connection', function(socket) {
          io.emit('all messages', messages);
       });
     })
-  })
+  });
+
+  socket.on('remove message leaf',function(msg){
+    console.log('removing message, message is: ', msg);
+    messageController.removeMessage(msg,function(){
+       console.log('removing message')
+       messageController.getFullMessageTree(function(messages) {
+         console.log('sending',messages)
+         io.emit('all messages', messages);
+      });
+    });
+  });
+
+
 });
 
 var port = process.env.PORT || 8000;
