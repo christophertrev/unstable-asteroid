@@ -20,10 +20,10 @@ var svg = d3.select(".d3box").append("svg")
     .append('g');
 
 svg.append('rect')
-  .attr('width', 1000)
-  .attr('height', 1000)
-  .attr('x', 0)
-  .attr('y', 0)
+  .attr('width', 10000)
+  .attr('height', 10000)
+  .attr('x', -5000)
+  .attr('y', -5000)
   .attr('class', 'overlay');
 
 var link = svg.selectAll(".link"),
