@@ -6,7 +6,17 @@ function setTreeData(data){
   update();
 };
 
+function allowRemoval(data){
+  $('.btn.remove').show();
+}
+
+function disallowRemoval(data){
+  $('.btn.remove').hide();
+}
+
 $(document).ready(function(){
+
+  $('.btn.remove').hide();
 
   //Make connection 
   var socket = new Socket();
@@ -23,7 +33,7 @@ $(document).ready(function(){
     var messageObject = {};
     if(nodeSelected){
       //Send over message and parentID
-      messageObject = {message: message, parentID: nodeSelected};
+      messageObject = {message: message, parentID: nodeSelected._id};
     }else{
       messageObject = {message: message, parentID: 'null'};
     }
@@ -37,11 +47,20 @@ $(document).ready(function(){
     var messageObject = {};
     if(nodeSelected){
       //Send over message and parentID
-      messageObject = {message: message, _id: nodeSelected};
+      messageObject = {message: message, _id: nodeSelected._id};
       socket.sendEdit(messageObject);
     }
+  });
 
-  })
+  $('.btn.remove').on('click',function(e){
+    //emit message to db
+    var messageObject = {};
+      //Send over id and and parentID
+      messageObject = {_id: nodeSelected._id, parentID: nodeSelected.parentID};
+      socket.sendDelete(messageObject);
+    
+    $(this).hide();
+  });
 
 });
 

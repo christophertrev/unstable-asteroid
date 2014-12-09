@@ -100,10 +100,12 @@ function update() {
     .text(function(d){return d.message}); 
 
   node.attr("class", function(d){
-    if(d._id === nodeSelected) {
-      return "node selected";
-    }else{
-      return "node";
+    if(nodeSelected !== null){
+      if(d._id === nodeSelected._id) {
+        return "node selected";
+      }else{
+        return "node";
+      }
     }
   });
 }
@@ -124,9 +126,7 @@ function color(d) {
   var maxChildrenColor = "#ff3300";
   var noChildrenColor = "#FBB03B";
   var interpolateColor  = d3.scale.linear().domain([0,maxChildren]).range([noChildrenColor,maxChildrenColor]);
-
   return interpolateColor(Math.min(maxChildren, d.children.length));
-
 }
 
 function radius(d) {
@@ -160,12 +160,17 @@ function fontSize(d){
   var interpolateSize = d3.scale.linear().domain([15,1]).range([minFontSize,maxFontSize]);
   return interpolateSize(textLength);
 }
-var nodeSelected;
+var nodeSelected = null;
 // Toggle children on click.
 function click(d) {
+  console.log(d);
   if (!d3.event.defaultPrevented) {
-    nodeSelected = nodeSelected === d._id ? null : d._id;
+    nodeSelected = nodeSelected === d ? null : d;
     console.log('SELECTED NODE',nodeSelected)
+    if(nodeSelected.children.length === 0){
+      allowRemoval();
+    }else
+      disallowRemoval();
     update();
   }
 }
