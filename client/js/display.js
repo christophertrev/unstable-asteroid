@@ -160,17 +160,19 @@ function fontSize(d){
   var interpolateSize = d3.scale.linear().domain([15,1]).range([minFontSize,maxFontSize]);
   return interpolateSize(textLength);
 }
+
 var nodeSelected = null;
 // Toggle children on click.
 function click(d) {
   console.log(d);
   if (!d3.event.defaultPrevented) {
     nodeSelected = nodeSelected === d ? null : d;
-    console.log('SELECTED NODE',nodeSelected)
-    if(nodeSelected.children.length === 0){
-      allowRemoval();
-    }else
+    console.log('SELECTED NODE',nodeSelected);
+    if(nodeSelected !== null && nodeSelected.children.length === 0){
+        allowRemoval();
+    }else{
       disallowRemoval();
+    }
     update();
   }
 }
