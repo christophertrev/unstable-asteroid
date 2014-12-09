@@ -1,15 +1,21 @@
 'use strict';
 
-var Message = require('./messageModel'),
-    Q       = require('q');
+var Message  = require('./messageModel'),
+    Q        = require('q'),
+    mongoose = require('mongoose');
+
+//connects global mongoose variable to online MongoDB DB
+mongoose.connect('mongodb://MongoLab-d:tsWFfWiQkrxfZhKZbNOBPVGp3culnVTNs5G7nyd1cbE-@ds050077.mongolab.com:50077/MongoLab-d');
 
 /**
- * [contains helper function to add messages to tree and fetch entire tree]
- * @type {Object}
+ * helper functions that reference and modify messages in DB
  */
 module.exports = {
 
-  //returns array of all messages on db
+  /**
+   * return array of constructed trees
+   * @params [Function] callback to be called after successful retrieval
+   */
   getFullMessageTree: function(callback) {
     var getMessageTree = Q.nbind(Message.find, Message);
 
@@ -22,8 +28,11 @@ module.exports = {
       });
   },
 
-  //adds message to db
-  //@params [Object (message, parentID)]
+  /**
+   * constructs mongoose model and adds message to DB
+   * @param {Object} messageObject provided by client
+   * @param {Function} callback to be called if successful addition
+   */
   addNewMessage: function (messageObject, callback) {
     if (messageObject.parentID === 'null') {
       messageObject.parentID = null;
@@ -38,12 +47,12 @@ module.exports = {
     var createMessage = Q.nbind(Message.create, Message);
     var findMessage = Q.nbind(Message.find, Message);
 
-    //creates and saves message to db
+    //creates and saves message to DB
     createMessage(newMessage)
       .then(function(createdMessage) {
         return createdMessage;
       })
-      // finds parent of the created message. pushes messageID into childrenID array of parent and saves back to db
+      // finds parent of the created message. pushes messageID into childrenID array of parent and saves back to DB
       .then(function(createdMessage) {
         findMessage({ _id: createdMessage.parentID })
           .then(function(foundParent) {
@@ -61,7 +70,7 @@ module.exports = {
       });
   },
 
-  //middleware function that clears DB
+  /** middleware function that clears database and redirects to home page */
   clearDB: function(req, res) {
     Message.remove(function(err) {
       if (!err) {
@@ -72,9 +81,8 @@ module.exports = {
 
   /**
    * edits single message in DB
-   * @param  {[Object]}   messageObject
-   * @param  {Function} callback
-   * @return {[type]}
+   * @param  {Object} message object provided by client
+   * @param  {Function} callback to be called after reference to DB
    */
   editMessage: function(messageObject, callback) {
     Message.update({ _id: messageObject._id}, { message: messageObject.message }, function(err, updatedMessage) {
@@ -84,25 +92,17 @@ module.exports = {
     });
   },
 
+  /**
+   * remove message from DB
+   * @params [Object] message object provided by client
+   * @params [Function] callback to be called if successful removal
+   */
   removeMessage: function(messageObject, callback) {
     Message.remove({ _id: messageObject._id }, function(err) {
 
       //if messageObject has parent then update parent
       if (!err && messageObject.parentID) {
-        Message.findOne({_id: messageObject.parentID}, function(err, foundParent) {
-          var childrenID = foundParent.childrenID;
-          var updatedChildrenID = [];
-
-          childrenID.forEach(function(ID) {
-            if (String(ID) !== String(messageObject._id)) {
-              updatedChildrenID.push(ID);
-            }
-          });
-
-          Message.update({_id: messageObject.parentID}, {childrenID: updatedChildrenID}, function(err, data) {
-            callback();
-          });
-        });
+        module.exports(messageObject, callback);
       } else {
         callback();
       }
@@ -110,24 +110,32 @@ module.exports = {
 
   },
 
-  //removes ID from all childrenID arrays //NOT USED
+  /**
+   * searches DB for parent of removed element and removes ID from childrenID array
+   * @params {Object} child object
+   * @params {Function} callback to be called after execution
+   */
   removeChildReferenceFromParent: function(messageObject, callback) {
-    Message.findOne({_id: messageObject.parentID}, function(err, foundParent) {
-      var childrenID = foundParent.childrenID;
-      var updatedChildrenID = [];
-      childrenID.forEach(function(ID) {
-        if (ID !== messageObject._id) {
-          updatedChildrenID.push(ID);
-        }
-      });
-    });
+   Message.findOne({_id: messageObject.parentID}, function(err, foundParent) {
+     var childrenID = foundParent.childrenID;
+     var updatedChildrenID = [];
 
+     childrenID.forEach(function(ID) {
+       if (String(ID) !== String(messageObject._id)) {
+         updatedChildrenID.push(ID);
+       }
+     });
+
+     Message.update({_id: messageObject.parentID}, {childrenID: updatedChildrenID}, function(err, data) {
+       callback();
+     });
+   });
   },
 
   /**
    * creates array of messages + direct children
-   * @param {[Array]}
-   * @returns {[Array]}
+   * @param {[mongoose model]}
+   * @returns {[Object]}
    */
   constructRootsArray: function(arrayOfMessages) {
     var messages = [],
@@ -152,6 +160,11 @@ module.exports = {
     return roots;
   },
 
+  /**
+   * converts mongoose model to object
+   * @params {mongoose model}
+   * @return {Object}
+   */
   cloneMessage: function(messageModel) {
     return {
       message: messageModel.message,
@@ -161,7 +174,11 @@ module.exports = {
     }
   },
 
-  //constructs entire tree
+  /**
+   * constructs tree provided root and array of all messages
+   * @params {Object} mongoose object
+   * @params {[mongoose models]} array of all messages fetched by DB
+   */
   constructTree: function(root, arrayOfMessages) {
     var root = module.exports.cloneMessage(root);
     root.children = [];
@@ -172,6 +189,12 @@ module.exports = {
     return root;
   },
 
+  /**
+   * searches array of messags and searches for ID
+   * @params {mongoose objectID}
+   * @params  {[mongoose models]}
+   * @return {[mongoose models]}
+   */
   findMessageByID: function(ID, arrayOfMessages) {
     for(var i = 0; i < arrayOfMessages.length; i++) {
       if (String(arrayOfMessages[i]._id) === String(ID)) {
