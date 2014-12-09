@@ -1,7 +1,8 @@
-//Tree is empty object
 treeData = [];
 
 function setTreeData(data){
+  //If data is present set equal to treedata 
+  // then update page
   treeData = data ? data : treeData;
   update();
 };
@@ -27,7 +28,6 @@ $(document).ready(function(){
   //Add bubble on submit
   $('.inputbox').on('submit', function(e){
     e.preventDefault();
-    console.log('hello')
     var message = $('.messageBox').val();
     $('.messageBox').val('');
     var messageObject = {};
@@ -41,7 +41,7 @@ $(document).ready(function(){
   });
 
   $('.btn.edit').on('click',function(e){
-    //emit message to db
+    //Emit message to db
     var message = $('.messageBox').val();
     $('.messageBox').val('');
     var messageObject = {};
@@ -53,12 +53,11 @@ $(document).ready(function(){
   });
 
   $('.btn.remove').on('click',function(e){
-    //emit message to db
+    //Emit message to db
     var messageObject = {};
       //Send over id and and parentID
       messageObject = {_id: nodeSelected._id, parentID: nodeSelected.parentID};
       socket.sendDelete(messageObject);
-    
     $(this).hide();
   });
 
