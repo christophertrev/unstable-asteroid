@@ -13,7 +13,7 @@ var paths = {
   // all our client app js files, not including 3rd party js files
   scripts: ['client/**/*.js'],
   html: ['client/**/*.html', 'client/index.html'],
-  styles: ['client/styles/styles.css'],
+  styles: ['client/styles/**.css'],
   test: ['specs/**/*.js']
 };
 
